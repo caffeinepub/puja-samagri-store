@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==================== FONT FACES ==================== */
+@font-face {
+  font-family: "Fraunces";
+  src: url("/assets/fonts/Fraunces.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/assets/fonts/PlusJakartaSans.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+
+    /* Warm cream background */
+    --background: 0.97 0.012 75;
+    --foreground: 0.22 0.045 35;
+
+    /* Card: white-ish warm */
+    --card: 0.995 0.005 75;
+    --card-foreground: 0.22 0.045 35;
+
+    /* Popover */
+    --popover: 0.995 0.005 75;
+    --popover-foreground: 0.22 0.045 35;
+
+    /* Primary: Saffron/Orange */
+    --primary: 0.62 0.195 48;
+    --primary-foreground: 0.99 0.005 75;
+
+    /* Secondary: Deep Maroon */
+    --secondary: 0.38 0.12 25;
+    --secondary-foreground: 0.99 0.005 75;
+
+    /* Muted: Warm beige */
+    --muted: 0.93 0.02 75;
+    --muted-foreground: 0.52 0.04 50;
+
+    /* Accent: Golden yellow */
+    --accent: 0.88 0.12 85;
+    --accent-foreground: 0.22 0.045 35;
+
+    /* Destructive */
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 0.985 0 0;
+
+    /* Border / Input */
+    --border: 0.88 0.025 65;
+    --input: 0.88 0.025 65;
+    --ring: 0.62 0.195 48;
+
+    /* Charts */
+    --chart-1: 0.62 0.195 48;
+    --chart-2: 0.38 0.12 25;
+    --chart-3: 0.75 0.15 80;
+    --chart-4: 0.55 0.18 35;
+    --chart-5: 0.70 0.16 60;
+
+    /* Sidebar */
+    --sidebar: 0.995 0.005 75;
+    --sidebar-foreground: 0.22 0.045 35;
+    --sidebar-primary: 0.62 0.195 48;
+    --sidebar-primary-foreground: 0.99 0.005 75;
+    --sidebar-accent: 0.93 0.02 75;
+    --sidebar-accent-foreground: 0.22 0.045 35;
+    --sidebar-border: 0.88 0.025 65;
+    --sidebar-ring: 0.62 0.195 48;
+
+    /* Custom puja tokens */
+    --saffron: 0.72 0.21 50;
+    --saffron-dark: 0.55 0.2 40;
+    --maroon: 0.35 0.14 20;
+    --maroon-light: 0.50 0.13 25;
+    --gold: 0.82 0.15 88;
+    --gold-dark: 0.65 0.16 80;
+    --cream: 0.97 0.012 75;
+    --cream-dark: 0.92 0.02 70;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+/* ==================== CUSTOM UTILITIES ==================== */
+@layer utilities {
+  .text-saffron {
+    color: oklch(var(--saffron));
+  }
+  .text-maroon {
+    color: oklch(var(--maroon));
+  }
+  .text-gold {
+    color: oklch(var(--gold-dark));
+  }
+  .bg-saffron {
+    background-color: oklch(var(--saffron));
+  }
+  .bg-saffron-dark {
+    background-color: oklch(var(--saffron-dark));
+  }
+  .bg-maroon {
+    background-color: oklch(var(--maroon));
+  }
+  .bg-cream {
+    background-color: oklch(var(--cream));
+  }
+  .bg-cream-dark {
+    background-color: oklch(var(--cream-dark));
+  }
+  .border-saffron {
+    border-color: oklch(var(--saffron));
+  }
+  .border-maroon {
+    border-color: oklch(var(--maroon));
+  }
+
+  .gradient-saffron {
+    background: linear-gradient(135deg, oklch(var(--saffron)) 0%, oklch(var(--maroon-light)) 100%);
+  }
+
+  .gradient-warm {
+    background: linear-gradient(180deg, oklch(var(--cream)) 0%, oklch(0.94 0.018 72) 100%);
+  }
+
+  .shadow-warm {
+    box-shadow: 0 4px 24px oklch(var(--saffron) / 0.15), 0 1px 4px oklch(var(--maroon) / 0.08);
+  }
+
+  .shadow-card {
+    box-shadow: 0 2px 12px oklch(var(--saffron) / 0.1), 0 1px 3px oklch(var(--maroon) / 0.06);
+  }
+
+  .ornament-divider::before {
+    content: "✦ ॐ ✦";
+    @apply text-saffron text-sm tracking-widest;
+  }
+}
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: oklch(var(--cream-dark));
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(var(--saffron) / 0.5);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--saffron));
+}
