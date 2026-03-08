@@ -19,73 +19,80 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/BricolageGrotesque.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --radius: 0.75rem;
 
-    /* Warm cream background */
-    --background: 0.97 0.012 75;
-    --foreground: 0.22 0.045 35;
+    /* Devotional Luxury palette — deepened & refined */
+    --background: 0.975 0.014 72;
+    --foreground: 0.15 0.055 28;
 
-    /* Card: white-ish warm */
-    --card: 0.995 0.005 75;
-    --card-foreground: 0.22 0.045 35;
+    --card: 1.0 0.004 72;
+    --card-foreground: 0.15 0.055 28;
 
-    /* Popover */
-    --popover: 0.995 0.005 75;
-    --popover-foreground: 0.22 0.045 35;
+    --popover: 1.0 0.004 72;
+    --popover-foreground: 0.15 0.055 28;
 
-    /* Primary: Saffron/Orange */
-    --primary: 0.62 0.195 48;
+    /* Primary: deep saffron */
+    --primary: 0.60 0.21 45;
     --primary-foreground: 0.99 0.005 75;
 
-    /* Secondary: Deep Maroon */
-    --secondary: 0.38 0.12 25;
+    /* Secondary: very deep maroon */
+    --secondary: 0.30 0.13 18;
     --secondary-foreground: 0.99 0.005 75;
 
-    /* Muted: Warm beige */
-    --muted: 0.93 0.02 75;
-    --muted-foreground: 0.52 0.04 50;
+    /* Muted */
+    --muted: 0.93 0.022 72;
+    --muted-foreground: 0.48 0.045 45;
 
-    /* Accent: Golden yellow */
-    --accent: 0.88 0.12 85;
-    --accent-foreground: 0.22 0.045 35;
+    /* Accent */
+    --accent: 0.88 0.14 82;
+    --accent-foreground: 0.15 0.055 28;
 
     /* Destructive */
     --destructive: 0.577 0.245 27.325;
     --destructive-foreground: 0.985 0 0;
 
     /* Border / Input */
-    --border: 0.88 0.025 65;
-    --input: 0.88 0.025 65;
-    --ring: 0.62 0.195 48;
+    --border: 0.88 0.028 65;
+    --input: 0.88 0.028 65;
+    --ring: 0.60 0.21 45;
 
     /* Charts */
-    --chart-1: 0.62 0.195 48;
-    --chart-2: 0.38 0.12 25;
+    --chart-1: 0.60 0.21 45;
+    --chart-2: 0.30 0.13 18;
     --chart-3: 0.75 0.15 80;
     --chart-4: 0.55 0.18 35;
     --chart-5: 0.70 0.16 60;
 
     /* Sidebar */
-    --sidebar: 0.995 0.005 75;
-    --sidebar-foreground: 0.22 0.045 35;
-    --sidebar-primary: 0.62 0.195 48;
+    --sidebar: 1.0 0.004 72;
+    --sidebar-foreground: 0.15 0.055 28;
+    --sidebar-primary: 0.60 0.21 45;
     --sidebar-primary-foreground: 0.99 0.005 75;
-    --sidebar-accent: 0.93 0.02 75;
-    --sidebar-accent-foreground: 0.22 0.045 35;
-    --sidebar-border: 0.88 0.025 65;
-    --sidebar-ring: 0.62 0.195 48;
+    --sidebar-accent: 0.93 0.022 72;
+    --sidebar-accent-foreground: 0.15 0.055 28;
+    --sidebar-border: 0.88 0.028 65;
+    --sidebar-ring: 0.60 0.21 45;
 
-    /* Custom puja tokens */
-    --saffron: 0.72 0.21 50;
-    --saffron-dark: 0.55 0.2 40;
-    --maroon: 0.35 0.14 20;
-    --maroon-light: 0.50 0.13 25;
-    --gold: 0.82 0.15 88;
-    --gold-dark: 0.65 0.16 80;
-    --cream: 0.97 0.012 75;
-    --cream-dark: 0.92 0.02 70;
+    /* Custom puja tokens — deeper, more sacred */
+    --saffron: 0.68 0.22 45;
+    --saffron-dark: 0.52 0.21 38;
+    --maroon: 0.28 0.13 16;
+    --maroon-light: 0.42 0.12 22;
+    --gold: 0.84 0.16 84;
+    --gold-dark: 0.68 0.17 78;
+    --gold-accent: 0.88 0.18 82;
+    --cream: 0.975 0.014 72;
+    --cream-dark: 0.925 0.022 68;
   }
 
   * {
@@ -103,6 +110,7 @@
 
 /* ==================== CUSTOM UTILITIES ==================== */
 @layer utilities {
+  /* Color utilities */
   .text-saffron {
     color: oklch(var(--saffron));
   }
@@ -111,6 +119,9 @@
   }
   .text-gold {
     color: oklch(var(--gold-dark));
+  }
+  .text-gold-accent {
+    color: oklch(var(--gold-accent));
   }
   .bg-saffron {
     background-color: oklch(var(--saffron));
@@ -134,26 +145,169 @@
     border-color: oklch(var(--maroon));
   }
 
+  /* Gradient utilities */
   .gradient-saffron {
     background: linear-gradient(135deg, oklch(var(--saffron)) 0%, oklch(var(--maroon-light)) 100%);
   }
-
   .gradient-warm {
-    background: linear-gradient(180deg, oklch(var(--cream)) 0%, oklch(0.94 0.018 72) 100%);
+    background: linear-gradient(180deg, oklch(var(--cream)) 0%, oklch(0.94 0.018 68) 100%);
+  }
+  .gradient-gold {
+    background: linear-gradient(135deg, oklch(var(--gold)) 0%, oklch(var(--saffron)) 100%);
   }
 
+  /* Shadow utilities */
   .shadow-warm {
-    box-shadow: 0 4px 24px oklch(var(--saffron) / 0.15), 0 1px 4px oklch(var(--maroon) / 0.08);
+    box-shadow: 0 4px 24px oklch(var(--saffron) / 0.2), 0 1px 4px oklch(var(--maroon) / 0.1);
   }
-
   .shadow-card {
-    box-shadow: 0 2px 12px oklch(var(--saffron) / 0.1), 0 1px 3px oklch(var(--maroon) / 0.06);
+    box-shadow: 0 2px 16px oklch(var(--saffron) / 0.1), 0 1px 4px oklch(var(--maroon) / 0.06);
+  }
+  .shadow-elevated {
+    box-shadow: 0 20px 60px oklch(var(--maroon) / 0.16), 0 4px 16px oklch(var(--maroon) / 0.1);
+  }
+  .shadow-divine {
+    box-shadow: 0 0 40px oklch(var(--gold) / 0.2), 0 8px 32px oklch(var(--maroon) / 0.12);
   }
 
+  /* Ornament divider */
   .ornament-divider::before {
     content: "✦ ॐ ✦";
     @apply text-saffron text-sm tracking-widest;
   }
+
+  /* Announcement bar — deeper saffron */
+  .announcement-bar {
+    background: linear-gradient(90deg, oklch(var(--saffron)) 0%, oklch(var(--maroon-light)) 50%, oklch(var(--saffron-dark)) 100%);
+    animation: slide-down 0.35s ease-out;
+  }
+
+  /* Section divider */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+  }
+  .section-divider::before,
+  .section-divider::after {
+    content: "";
+    flex: 1;
+    max-width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, oklch(var(--saffron) / 0.5));
+  }
+  .section-divider::after {
+    background: linear-gradient(90deg, oklch(var(--saffron) / 0.5), transparent);
+  }
+
+  /* Hero overlay */
+  .hero-overlay {
+    background: linear-gradient(to right, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.57) 50%, rgba(0,0,0,0.12) 100%);
+  }
+
+  /* Trust card */
+  .trust-card {
+    background: oklch(var(--card));
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px oklch(var(--maroon) / 0.08), inset 0 1px 0 oklch(1 0 0 / 0.7);
+    border: 1px solid oklch(var(--border));
+  }
+
+  /* Product image block */
+  .product-img-block {
+    width: 100%;
+    height: 10rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius) var(--radius) 0 0;
+    overflow: hidden;
+  }
+
+  /* Floating scroll button */
+  .floating-scroll-btn {
+    position: fixed;
+    bottom: 5.5rem;
+    right: 1.5rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, oklch(var(--saffron)), oklch(var(--saffron-dark)));
+    box-shadow: 0 4px 24px oklch(var(--saffron) / 0.4), 0 2px 8px oklch(var(--maroon) / 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 50;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .floating-scroll-btn:hover {
+    box-shadow: 0 6px 28px oklch(var(--saffron) / 0.55), 0 2px 8px oklch(var(--maroon) / 0.2);
+  }
+
+  /* Category top accent bars */
+  .cat-accent-flowers { background: linear-gradient(90deg, oklch(0.75 0.18 45), oklch(0.65 0.2 38)); }
+  .cat-accent-haar    { background: linear-gradient(90deg, oklch(0.72 0.2 10), oklch(0.60 0.22 355)); }
+  .cat-accent-essentials { background: linear-gradient(90deg, oklch(0.84 0.16 82), oklch(0.72 0.2 72)); }
+  .cat-accent-thali   { background: linear-gradient(90deg, oklch(0.75 0.18 58), oklch(0.65 0.2 48)); }
+  .cat-accent-occasion { background: linear-gradient(90deg, oklch(0.60 0.22 30), oklch(0.48 0.2 22)); }
+  .cat-accent-books   { background: linear-gradient(90deg, oklch(0.60 0.2 280), oklch(0.50 0.22 265)); }
+
+  /* Gradient text utilities */
+  .text-gradient-saffron {
+    background: linear-gradient(135deg, oklch(var(--saffron)) 0%, oklch(var(--maroon-light)) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Gold gradient text */
+  .gold-text {
+    background: linear-gradient(135deg, oklch(var(--gold-accent)) 0%, oklch(var(--gold-dark)) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Devotional section — warm cream gradient bg */
+  .devotional-section {
+    background: linear-gradient(180deg, oklch(var(--cream)) 0%, oklch(0.96 0.02 70) 100%);
+  }
+
+  /* Dark maroon section */
+  .maroon-section {
+    background: linear-gradient(180deg, oklch(var(--maroon)) 0%, oklch(0.22 0.10 16) 100%);
+  }
+
+  /* Flame animation utility */
+  .animate-flame {
+    animation: flame-flicker 2s ease-in-out infinite;
+  }
+}
+
+/* ==================== KEYFRAME ANIMATIONS ==================== */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(0.68 0.22 45 / 0.4); }
+  50% { box-shadow: 0 0 0 8px oklch(0.68 0.22 45 / 0); }
+}
+
+@keyframes subtle-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes slide-down {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes flame-flicker {
+  0%, 100% { opacity: 1; transform: scaleY(1) scaleX(1); }
+  25% { opacity: 0.95; transform: scaleY(1.04) scaleX(0.97); }
+  50% { opacity: 0.98; transform: scaleY(0.97) scaleX(1.02); }
+  75% { opacity: 0.96; transform: scaleY(1.02) scaleX(0.98); }
 }
 
 /* ==================== SCROLLBAR ==================== */
@@ -165,7 +319,7 @@
   background: oklch(var(--cream-dark));
 }
 ::-webkit-scrollbar-thumb {
-  background: oklch(var(--saffron) / 0.5);
+  background: oklch(var(--saffron) / 0.45);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {

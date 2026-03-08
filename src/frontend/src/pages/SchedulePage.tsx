@@ -31,6 +31,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ProductCategory } from "../backend.d";
+import { PRODUCT_IMAGES } from "../data/productImages";
 import { useAllProducts } from "../hooks/useQueries";
 import {
   type Schedule,
@@ -143,6 +144,7 @@ function Step1({
               {flowers.map((product, idx) => {
                 const key = product.id.toString();
                 const qty = quantities[key] ?? 0;
+                const img = PRODUCT_IMAGES[Number(product.id)];
                 return (
                   <motion.div
                     key={key}
@@ -156,13 +158,26 @@ function Step1({
                         : "border-border bg-card hover:border-saffron/40"
                     }`}
                   >
-                    <div className="flex-1 min-w-0 mr-3">
-                      <p className="font-body text-sm font-semibold text-foreground truncate">
-                        {product.name}
-                      </p>
-                      <p className="font-body text-xs text-muted-foreground">
-                        {formatPrice(product.price)}/{product.unit}
-                      </p>
+                    <div className="flex items-center gap-3 flex-1 min-w-0 mr-3">
+                      {img ? (
+                        <img
+                          src={img}
+                          alt={product.name}
+                          className="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-border"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-saffron/10 flex items-center justify-center flex-shrink-0 text-lg">
+                          🌸
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="font-body text-sm font-semibold text-foreground truncate">
+                          {product.name}
+                        </p>
+                        <p className="font-body text-xs text-muted-foreground">
+                          {formatPrice(product.price)}/{product.unit}
+                        </p>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Button
@@ -206,6 +221,7 @@ function Step1({
               {haars.map((product, idx) => {
                 const key = product.id.toString();
                 const qty = quantities[key] ?? 0;
+                const img = PRODUCT_IMAGES[Number(product.id)];
                 return (
                   <motion.div
                     key={key}
@@ -219,18 +235,31 @@ function Step1({
                         : "border-border bg-card hover:border-saffron/40"
                     }`}
                   >
-                    <div className="flex-1 min-w-0 mr-3">
-                      <p className="font-body text-sm font-semibold text-foreground truncate">
-                        {product.name}
-                      </p>
-                      <p className="font-body text-xs text-muted-foreground">
-                        {formatPrice(product.price)}/{product.unit}
-                        {product.occasionTag && (
-                          <span className="ml-1 text-amber-600">
-                            • {product.occasionTag}
-                          </span>
-                        )}
-                      </p>
+                    <div className="flex items-center gap-3 flex-1 min-w-0 mr-3">
+                      {img ? (
+                        <img
+                          src={img}
+                          alt={product.name}
+                          className="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-border"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-saffron/10 flex items-center justify-center flex-shrink-0 text-lg">
+                          💐
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="font-body text-sm font-semibold text-foreground truncate">
+                          {product.name}
+                        </p>
+                        <p className="font-body text-xs text-muted-foreground">
+                          {formatPrice(product.price)}/{product.unit}
+                          {product.occasionTag && (
+                            <span className="ml-1 text-amber-600">
+                              • {product.occasionTag}
+                            </span>
+                          )}
+                        </p>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Button

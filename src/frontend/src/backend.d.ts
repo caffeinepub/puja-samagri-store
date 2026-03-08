@@ -7,6 +7,12 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
+export interface Review {
+    productId: bigint;
+    comment: string;
+    rating: bigint;
+    reviewer: Principal;
+}
 export interface Order {
     id: bigint;
     customerName: string;
@@ -29,9 +35,6 @@ export interface CartItem {
     productId: bigint;
     quantity: bigint;
 }
-export interface UserProfile {
-    name: string;
-}
 export interface Product {
     id: bigint;
     inStock: boolean;
@@ -41,6 +44,9 @@ export interface Product {
     description: string;
     category: ProductCategory;
     price: bigint;
+}
+export interface UserProfile {
+    name: string;
 }
 export enum OrderStatus {
     shipped = "shipped",
@@ -63,9 +69,11 @@ export enum UserRole {
 }
 export interface backendInterface {
     addProduct(name: string, category: ProductCategory, description: string, price: bigint, unit: string, inStock: boolean, occasionTag: string | null): Promise<void>;
+    addReview(productId: bigint, rating: bigint, comment: string): Promise<void>;
     addToCart(productId: bigint, quantity: bigint): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     clearCart(): Promise<void>;
+    ensureCallerIsUser(): Promise<void>;
     getAllOrders(): Promise<Array<Order>>;
     getAllProducts(): Promise<Array<Product>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
@@ -73,6 +81,7 @@ export interface backendInterface {
     getCart(): Promise<Array<CartItem>>;
     getMyOrders(): Promise<Array<Order>>;
     getPanditAvailabilities(): Promise<Array<PanditAvailability>>;
+    getProductReviews(productId: bigint): Promise<Array<Review>>;
     getProductsByCategory(category: ProductCategory): Promise<Array<Product>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;

@@ -60,6 +60,12 @@ export const PanditAvailability = IDL.Record({
   'available' : IDL.Bool,
   'panditId' : IDL.Text,
 });
+export const Review = IDL.Record({
+  'productId' : IDL.Nat,
+  'comment' : IDL.Text,
+  'rating' : IDL.Nat,
+  'reviewer' : IDL.Principal,
+});
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -76,9 +82,11 @@ export const idlService = IDL.Service({
       [],
       [],
     ),
+  'addReview' : IDL.Func([IDL.Nat, IDL.Nat, IDL.Text], [], []),
   'addToCart' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'clearCart' : IDL.Func([], [], []),
+  'ensureCallerIsUser' : IDL.Func([], [], []),
   'getAllOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
   'getAllProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
@@ -90,6 +98,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(PanditAvailability)],
       ['query'],
     ),
+  'getProductReviews' : IDL.Func([IDL.Nat], [IDL.Vec(Review)], ['query']),
   'getProductsByCategory' : IDL.Func(
       [ProductCategory],
       [IDL.Vec(Product)],
@@ -172,6 +181,12 @@ export const idlFactory = ({ IDL }) => {
     'available' : IDL.Bool,
     'panditId' : IDL.Text,
   });
+  const Review = IDL.Record({
+    'productId' : IDL.Nat,
+    'comment' : IDL.Text,
+    'rating' : IDL.Nat,
+    'reviewer' : IDL.Principal,
+  });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -188,9 +203,11 @@ export const idlFactory = ({ IDL }) => {
         [],
         [],
       ),
+    'addReview' : IDL.Func([IDL.Nat, IDL.Nat, IDL.Text], [], []),
     'addToCart' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'clearCart' : IDL.Func([], [], []),
+    'ensureCallerIsUser' : IDL.Func([], [], []),
     'getAllOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
     'getAllProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
@@ -202,6 +219,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(PanditAvailability)],
         ['query'],
       ),
+    'getProductReviews' : IDL.Func([IDL.Nat], [IDL.Vec(Review)], ['query']),
     'getProductsByCategory' : IDL.Func(
         [ProductCategory],
         [IDL.Vec(Product)],

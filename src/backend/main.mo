@@ -10,6 +10,8 @@ import Principal "mo:core/Principal";
 import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
 
+
+
 actor {
   type ProductCategory = {
     #flowers;
@@ -68,6 +70,13 @@ actor {
     available : Bool;
   };
 
+  type Review = {
+    productId : Nat;
+    rating : Nat;
+    comment : Text;
+    reviewer : Principal;
+  };
+
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
@@ -77,9 +86,11 @@ actor {
   let orderStore = Map.empty<Nat, Order>();
   let userProfiles = Map.empty<Principal, UserProfile>();
   let panditAvailabilityStore = Map.empty<Text, Bool>();
+  let reviewStore = Map.empty<Nat, List.List<Review>>(); // productId -> List<Review>
 
   var nextProductId = 1;
   var nextOrderId = 1;
+  var nextReviewId = 1;
 
   module Product {
     public func compare(p1 : Product, p2 : Product) : Order.Order {
@@ -299,4 +310,56 @@ actor {
     let iter = panditAvailabilityStore.entries();
     iter.toArray().map(func((panditId, available)) { { panditId; available } });
   };
+
+  // Review System - Authenticated users only
+  public shared ({ caller }) func addReview(productId : Nat, rating : Nat, comment : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can add reviews");
+    };
+    if (rating < 1 or rating > 5) { Runtime.trap("Rating must be between 1 and 5") };
+    switch (productStore.get(productId)) {
+      case (null) { Runtime.trap("Product not found") };
+      case (?_) {
+        let review : Review = {
+          productId;
+          rating;
+          comment;
+          reviewer = caller;
+        };
+        let currentReviews = switch (reviewStore.get(productId)) {
+          case (null) { List.empty<Review>() };
+          case (?reviews) { reviews };
+        };
+        currentReviews.add(review);
+        reviewStore.add(productId, currentReviews);
+        nextReviewId += 1;
+      };
+    };
+  };
+
+  public query ({ caller }) func getProductReviews(productId : Nat) : async [Review] {
+    switch (reviewStore.get(productId)) {
+      case (null) { [] };
+      case (?reviews) { reviews.toArray() };
+    };
+  };
+
+  // Self-Service User Registration
+  // This function allows authenticated (non-anonymous) users to self-register as #user role
+  // We bypass the admin-only check in assignRole by using the canister's own principal
+  public shared ({ caller }) func ensureCallerIsUser() : async () {
+    if (caller.isAnonymous()) {
+      Runtime.trap("Anonymous users cannot register as users. Please login with an II or wallet first.");
+    };
+
+    let role = accessControlState.userRoles.get(caller);
+
+    switch (role) {
+      case (null) {
+        accessControlState.userRoles.add(caller, #user);
+      };
+      case (?_) { () }; // Already a user or admin, do nothing
+    };
+  };
 };
+

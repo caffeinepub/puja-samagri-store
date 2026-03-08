@@ -46,6 +46,12 @@ export type ProductCategory = { 'occasionPackages' : null } |
   { 'books' : null } |
   { 'pujaEssentials' : null } |
   { 'flowers' : null };
+export interface Review {
+  'productId' : bigint,
+  'comment' : string,
+  'rating' : bigint,
+  'reviewer' : Principal,
+}
 export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
@@ -56,9 +62,11 @@ export interface _SERVICE {
     [string, ProductCategory, string, bigint, string, boolean, [] | [string]],
     undefined
   >,
+  'addReview' : ActorMethod<[bigint, bigint, string], undefined>,
   'addToCart' : ActorMethod<[bigint, bigint], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'clearCart' : ActorMethod<[], undefined>,
+  'ensureCallerIsUser' : ActorMethod<[], undefined>,
   'getAllOrders' : ActorMethod<[], Array<Order>>,
   'getAllProducts' : ActorMethod<[], Array<Product>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
@@ -66,6 +74,7 @@ export interface _SERVICE {
   'getCart' : ActorMethod<[], Array<CartItem>>,
   'getMyOrders' : ActorMethod<[], Array<Order>>,
   'getPanditAvailabilities' : ActorMethod<[], Array<PanditAvailability>>,
+  'getProductReviews' : ActorMethod<[bigint], Array<Review>>,
   'getProductsByCategory' : ActorMethod<[ProductCategory], Array<Product>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,

@@ -36,6 +36,7 @@ import {
 import { motion } from "motion/react";
 import { useRef, useState } from "react";
 import { PANDITS, type Pandit } from "../data/pandits";
+import { PANDIT_IMAGES } from "../data/productImages";
 import { type PanditBooking, useBookings } from "../hooks/useBookings";
 import { usePanditAvailabilities } from "../hooks/useQueries";
 
@@ -97,8 +98,19 @@ function PanditCard({
         <CardContent className="p-5 flex-1 flex flex-col gap-4">
           {/* Header row */}
           <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-saffron/20 to-maroon/20 flex items-center justify-center text-3xl flex-shrink-0 border border-saffron/20">
-              {pandit.emoji}
+            <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-2 border-saffron/30 shadow-sm">
+              {PANDIT_IMAGES[pandit.id] ? (
+                <img
+                  src={PANDIT_IMAGES[pandit.id]}
+                  alt={pandit.name}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-saffron/20 to-maroon/20 flex items-center justify-center text-3xl">
+                  {pandit.emoji}
+                </div>
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2 flex-wrap">

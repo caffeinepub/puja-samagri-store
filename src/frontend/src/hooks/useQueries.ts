@@ -6,6 +6,7 @@ import type {
   PanditAvailability,
   Product,
   ProductCategory,
+  Review,
 } from "../backend.d";
 import { SEED_PRODUCTS } from "../data/seedProducts";
 import { useActor } from "./useActor";
@@ -14,32 +15,40 @@ import { useInternetIdentity } from "./useInternetIdentity";
 // ==================== PRODUCTS ====================
 
 export function useAllProducts() {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
   return useQuery<Product[]>({
-    queryKey: ["products"],
+    queryKey: ["products", !!actor],
     queryFn: async () => {
       if (!actor) return SEED_PRODUCTS;
-      const products = await actor.getAllProducts();
-      if (products.length === 0) return SEED_PRODUCTS;
-      return products;
+      try {
+        const products = await actor.getAllProducts();
+        if (products.length === 0) return SEED_PRODUCTS;
+        return products;
+      } catch {
+        return SEED_PRODUCTS;
+      }
     },
-    enabled: !isFetching,
+    enabled: true,
     staleTime: 5 * 60 * 1000,
   });
 }
 
 export function useProductsByCategory(category: ProductCategory) {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
   return useQuery<Product[]>({
-    queryKey: ["products", category],
+    queryKey: ["products", category, !!actor],
     queryFn: async () => {
       if (!actor) return SEED_PRODUCTS.filter((p) => p.category === category);
-      const products = await actor.getProductsByCategory(category);
-      if (products.length === 0)
+      try {
+        const products = await actor.getProductsByCategory(category);
+        if (products.length === 0)
+          return SEED_PRODUCTS.filter((p) => p.category === category);
+        return products;
+      } catch {
         return SEED_PRODUCTS.filter((p) => p.category === category);
-      return products;
+      }
     },
-    enabled: !isFetching,
+    enabled: true,
     staleTime: 5 * 60 * 1000,
   });
 }
@@ -232,6 +241,47 @@ export function useSetPanditAvailability() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["panditAvailabilities"] });
+    },
+  });
+}
+
+// ==================== REVIEWS ====================
+
+export function useProductReviews(productId: bigint) {
+  const { actor, isFetching } = useActor();
+  return useQuery<Review[]>({
+    queryKey: ["reviews", productId.toString()],
+    queryFn: async () => {
+      if (!actor) return [];
+      try {
+        return await actor.getProductReviews(productId);
+      } catch {
+        return [];
+      }
+    },
+    enabled: !isFetching,
+    staleTime: 2 * 60 * 1000,
+  });
+}
+
+export function useAddReview() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      productId,
+      rating,
+      comment,
+    }: { productId: bigint; rating: bigint; comment: string }) => {
+      if (!identity) throw new Error("Not authenticated");
+      if (!actor) throw new Error("Actor not ready");
+      await actor.addReview(productId, rating, comment);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["reviews", variables.productId.toString()],
+      });
     },
   });
 }

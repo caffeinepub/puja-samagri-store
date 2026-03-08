@@ -9,7 +9,9 @@ import {
 import { CartDrawer } from "./components/CartDrawer";
 import { Footer } from "./components/Footer";
 import { Navbar } from "./components/Navbar";
+import { ScrollToTop } from "./components/ScrollToTop";
 import { CartDrawerProvider } from "./context/CartContext";
+import { useEnsureUserRole } from "./hooks/useEnsureUserRole";
 import { AdminPage } from "./pages/AdminPage";
 import { BookPanditPage } from "./pages/BookPanditPage";
 import { CatalogPage } from "./pages/CatalogPage";
@@ -17,11 +19,13 @@ import { CheckoutPage } from "./pages/CheckoutPage";
 import { HomePage } from "./pages/HomePage";
 import { MyOrdersPage } from "./pages/MyOrdersPage";
 import { OrderConfirmationPage } from "./pages/OrderConfirmationPage";
+import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { SchedulePage } from "./pages/SchedulePage";
 
-// Root layout
-const rootRoute = createRootRoute({
-  component: () => (
+// Root layout — also ensures logged-in users get #user role automatically
+function RootLayout() {
+  useEnsureUserRole();
+  return (
     <CartDrawerProvider>
       <div className="min-h-screen flex flex-col bg-background">
         <Navbar />
@@ -30,10 +34,16 @@ const rootRoute = createRootRoute({
         </main>
         <Footer />
         <CartDrawer />
+        <ScrollToTop />
         <Toaster richColors position="top-right" />
       </div>
     </CartDrawerProvider>
-  ),
+  );
+}
+
+// Root layout
+const rootRoute = createRootRoute({
+  component: RootLayout,
 });
 
 // Routes
@@ -88,6 +98,12 @@ const adminRoute = createRoute({
   component: AdminPage,
 });
 
+const productDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/product/$id",
+  component: ProductDetailPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   catalogRoute,
@@ -97,6 +113,7 @@ const routeTree = rootRoute.addChildren([
   myOrdersRoute,
   bookPanditRoute,
   adminRoute,
+  productDetailRoute,
 ]);
 
 const router = createRouter({ routeTree });

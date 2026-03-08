@@ -1,8 +1,18 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Clock, Leaf, Star, Truck } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowRight,
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Leaf,
+  MapPin,
+  Star,
+  Truck,
+} from "lucide-react";
 import { type Variants, motion } from "motion/react";
 
 const CATEGORIES = [
@@ -11,72 +21,100 @@ const CATEGORIES = [
     label: "Fresh Flowers",
     emoji: "🌸",
     description: "Marigold, Rose, Lotus & more for daily puja",
-    color: "from-orange-50 to-amber-50",
-    border: "border-orange-200",
+    accentClass: "cat-accent-flowers",
   },
   {
     id: "haar",
     label: "Haar & Garlands",
     emoji: "💐",
     description: "Fresh garlands for deity offerings & ceremonies",
-    color: "from-rose-50 to-pink-50",
-    border: "border-rose-200",
+    accentClass: "cat-accent-haar",
   },
   {
     id: "pujaEssentials",
     label: "Puja Essentials",
     emoji: "🪔",
     description: "Incense, camphor, kumkum, chandan & more",
-    color: "from-yellow-50 to-amber-50",
-    border: "border-yellow-200",
+    accentClass: "cat-accent-essentials",
   },
   {
     id: "thaliSets",
     label: "Thali Sets",
     emoji: "🥣",
     description: "Complete puja thali sets for all occasions",
-    color: "from-amber-50 to-orange-50",
-    border: "border-amber-200",
+    accentClass: "cat-accent-thali",
   },
   {
     id: "occasionPackages",
     label: "Occasion Packages",
     emoji: "📦",
     description: "Navratri, Ganesh Puja, Griha Pravesh kits",
-    color: "from-red-50 to-rose-50",
-    border: "border-red-200",
+    accentClass: "cat-accent-occasion",
   },
   {
     id: "books",
     label: "Ritual Books",
     emoji: "📚",
-    description: "Bhagavad Gita, Hanuman Chalisa, Puja Vidhi guides & more",
-    color: "from-purple-50 to-indigo-50",
-    border: "border-purple-200",
+    description: "Bhagavad Gita, Hanuman Chalisa, Puja Vidhi guides",
+    accentClass: "cat-accent-books",
   },
 ];
 
 const FEATURES = [
   {
-    icon: <Truck className="w-5 h-5" />,
+    icon: <Truck className="w-6 h-6" />,
     label: "Daily Delivery",
-    desc: "Fresh every morning",
+    desc: "Fresh flowers every morning at your doorstep",
   },
   {
-    icon: <Leaf className="w-5 h-5" />,
-    label: "100% Fresh",
-    desc: "Direct from farms",
+    icon: <Leaf className="w-6 h-6" />,
+    label: "100% Pure",
+    desc: "Directly sourced from certified organic farms",
   },
   {
-    icon: <Clock className="w-5 h-5" />,
+    icon: <Clock className="w-6 h-6" />,
     label: "Flexible Schedules",
-    desc: "Choose your time",
+    desc: "Choose morning puja or evening aarti slots",
   },
   {
-    icon: <Star className="w-5 h-5" />,
+    icon: <Star className="w-6 h-6" />,
     label: "Premium Quality",
-    desc: "Handpicked daily",
+    desc: "Temple-grade flowers handpicked daily",
   },
+];
+
+const TRUST_BADGES = [
+  {
+    icon: <CheckCircle className="w-7 h-7" />,
+    title: "100% Pure",
+    desc: "Freshly sourced from certified organic farms every morning",
+  },
+  {
+    icon: <Star className="w-7 h-7" />,
+    title: "Sacred Quality",
+    desc: "Temple-grade flowers & items, carefully selected",
+  },
+  {
+    icon: <Truck className="w-7 h-7" />,
+    title: "Timely Delivery",
+    desc: "Reliable slots from 6 AM to 8 PM, six days a week",
+  },
+  {
+    icon: <Calendar className="w-7 h-7" />,
+    title: "Custom Schedules",
+    desc: "Set recurring orders for morning puja & evening aarti",
+  },
+];
+
+const OCCASIONS = [
+  { label: "Navratri", emoji: "🪔" },
+  { label: "Ganesh Chaturthi", emoji: "🐘" },
+  { label: "Diwali", emoji: "✨" },
+  { label: "Satyanarayan Puja", emoji: "🙏" },
+  { label: "Griha Pravesh", emoji: "🏠" },
+  { label: "Durga Puja", emoji: "🌺" },
+  { label: "Daily Puja", emoji: "☀️" },
+  { label: "Weddings", emoji: "💒" },
 ];
 
 const containerVariants: Variants = {
@@ -85,47 +123,118 @@ const containerVariants: Variants = {
 };
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55 } },
 };
+
+// Decorative mandala SVG
+function MandalaSVG() {
+  return (
+    <svg
+      viewBox="0 0 200 200"
+      xmlns="http://www.w3.org/2000/svg"
+      className="w-full h-full"
+      opacity="0.06"
+      fill="none"
+      stroke="white"
+      strokeWidth="0.7"
+      role="img"
+      aria-label="Decorative mandala pattern"
+    >
+      <circle cx="100" cy="100" r="90" />
+      <circle cx="100" cy="100" r="70" />
+      <circle cx="100" cy="100" r="50" />
+      <circle cx="100" cy="100" r="30" />
+      <circle cx="100" cy="100" r="10" />
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => {
+        const rad = (angle * Math.PI) / 180;
+        const x1 = 100 + 10 * Math.cos(rad);
+        const y1 = 100 + 10 * Math.sin(rad);
+        const x2 = 100 + 90 * Math.cos(rad);
+        const y2 = 100 + 90 * Math.sin(rad);
+        return <line key={angle} x1={x1} y1={y1} x2={x2} y2={y2} />;
+      })}
+      {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle) => {
+        const rad = (angle * Math.PI) / 180;
+        const x = 100 + 60 * Math.cos(rad);
+        const y = 100 + 60 * Math.sin(rad);
+        return <circle key={angle} cx={x} cy={y} r="3" />;
+      })}
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => {
+        const rad = (angle * Math.PI) / 180;
+        const x = 100 + 80 * Math.cos(rad);
+        const y = 100 + 80 * Math.sin(rad);
+        return <circle key={angle} cx={x} cy={y} r="4" />;
+      })}
+    </svg>
+  );
+}
 
 export function HomePage() {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
+      {/* ==================== HERO ==================== */}
       <section className="relative overflow-hidden">
-        <div className="relative h-[480px] sm:h-[540px]">
+        <div className="relative h-[560px] sm:h-[640px]">
           <img
-            src="/assets/generated/hero-flowers.dim_1200x500.jpg"
-            alt="Fresh puja flowers"
+            src="/assets/generated/hero-puja-main.dim_1440x640.jpg"
+            alt="Sacred puja samagri — brass thali with fresh flowers and lit diya"
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-transparent" />
+          {/* Deep refined overlay — subject on right, text on left */}
+          <div className="absolute inset-0 hero-overlay" />
+
+          {/* Mandala watermark — right side */}
+          <div className="absolute right-0 top-0 w-[380px] h-full pointer-events-none select-none hidden lg:block">
+            <MandalaSVG />
+          </div>
+
+          {/* Large OM watermark — decorative */}
+          <div className="absolute right-8 top-1/2 -translate-y-1/2 text-white/5 text-[180px] font-display select-none pointer-events-none hidden xl:block leading-none">
+            ॐ
+          </div>
+
           <div className="absolute inset-0 flex items-center">
             <div className="container mx-auto px-4">
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 36 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                 className="max-w-xl"
               >
-                <Badge className="bg-saffron/90 text-white mb-4 font-body text-xs tracking-wide px-3 py-1">
-                  🪔 Pure & Fresh Daily
-                </Badge>
-                <h1 className="font-display text-4xl sm:text-5xl font-bold text-white leading-tight mb-4">
-                  Pure Puja Samagri,{" "}
-                  <span className="text-amber-300">Delivered Fresh</span>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2, duration: 0.55 }}
+                >
+                  <Badge
+                    className="mb-5 font-body text-xs tracking-wider px-4 py-1.5 rounded-full border-0 flex items-center gap-2 w-fit text-white"
+                    style={{ background: "oklch(0.68 0.22 45 / 0.9)" }}
+                  >
+                    <span className="animate-flame inline-block">🪔</span>
+                    Sacred & Pure
+                  </Badge>
+                </motion.div>
+
+                <h1 className="font-display text-5xl sm:text-6xl font-bold text-white leading-tight mb-5 drop-shadow-lg">
+                  Sacred Puja Samagri,
+                  <br />
+                  <span className="gold-text">Delivered Fresh Daily</span>
                 </h1>
-                <p className="font-body text-base sm:text-lg text-white/85 mb-8 leading-relaxed">
-                  Fresh flowers, garlands, and puja essentials delivered at your
-                  doorstep. Schedule daily deliveries for your morning and
-                  evening aarti.
+                <p className="font-body text-lg sm:text-xl text-white/82 mb-8 leading-relaxed max-w-md">
+                  Handpicked flowers, temple-grade essentials & ritual kits —
+                  delivered to your doorstep for every morning puja and evening
+                  aarti.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <Button
                     size="lg"
-                    className="bg-saffron hover:bg-saffron-dark text-white font-body font-semibold px-8"
+                    className="text-white font-body font-semibold px-8 shadow-glow-saffron hover:shadow-warm transition-all duration-300 hover:-translate-y-0.5 border-0"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, oklch(0.68 0.22 45), oklch(0.52 0.21 38))",
+                    }}
                     onClick={() =>
                       navigate({
                         to: "/catalog",
@@ -134,129 +243,339 @@ export function HomePage() {
                     }
                     data-ocid="home.shopNow.button"
                   >
-                    Shop Now
+                    Shop Sacred Items
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-white/70 text-white bg-white/10 hover:bg-white/20 font-body font-semibold px-8 backdrop-blur-sm"
+                    className="border-white/55 text-white bg-white/8 hover:bg-white/18 font-body font-semibold px-8 backdrop-blur-sm transition-all duration-300"
                     onClick={() => navigate({ to: "/schedule" })}
                     data-ocid="home.scheduleFlowers.button"
                   >
-                    Schedule Flowers
+                    Set Daily Schedule
                   </Button>
                 </div>
               </motion.div>
             </div>
           </div>
+
+          {/* Scroll indicator */}
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/50"
+          >
+            <ArrowDown className="w-5 h-5" />
+          </motion.div>
         </div>
       </section>
 
-      {/* Feature pills */}
-      <section className="bg-maroon py-4">
+      {/* ==================== FEATURE CARDS ==================== */}
+      <section
+        className="py-10"
+        style={{
+          background:
+            "linear-gradient(180deg, oklch(0.96 0.02 70) 0%, oklch(1.0 0.004 72) 100%)",
+        }}
+      >
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-40px" }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          >
             {FEATURES.map((f) => (
-              <div
+              <motion.div
                 key={f.label}
-                className="flex items-center gap-2 justify-center text-white/90"
+                variants={itemVariants}
+                className="trust-card rounded-2xl p-5 flex flex-col items-start gap-3 border-l-4 hover:shadow-card transition-all duration-300"
+                style={{ borderLeftColor: "oklch(0.68 0.22 45 / 0.4)" }}
               >
-                <span className="text-amber-300">{f.icon}</span>
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, oklch(0.95 0.06 75), oklch(0.92 0.09 68))",
+                  }}
+                >
+                  <span className="text-saffron">{f.icon}</span>
+                </div>
                 <div>
-                  <p className="font-body text-sm font-semibold">{f.label}</p>
-                  <p className="font-body text-xs text-white/65 hidden sm:block">
+                  <p className="font-accent text-sm font-bold text-foreground leading-snug">
+                    {f.label}
+                  </p>
+                  <p className="font-body text-xs text-muted-foreground mt-0.5 leading-relaxed hidden sm:block">
                     {f.desc}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Category Grid */}
-      <section className="py-16 container mx-auto px-4">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-        >
-          <motion.div variants={itemVariants} className="text-center mb-10">
-            <p className="ornament-divider mb-3 flex justify-center" />
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-3">
-              Browse by Category
-            </h2>
-            <p className="font-body text-muted-foreground max-w-md mx-auto">
-              From fresh flowers to complete puja kits — everything you need for
-              your daily devotion
-            </p>
-          </motion.div>
+      {/* ==================== CATEGORY GRID ==================== */}
+      <section className="devotional-section py-20">
+        <div className="container mx-auto px-4">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+          >
+            <motion.div variants={itemVariants} className="text-center mb-12">
+              {/* Elegant decorative divider */}
+              <div className="flex items-center gap-4 justify-center mb-4">
+                <div
+                  className="h-px w-16"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, transparent, oklch(0.68 0.22 45 / 0.5))",
+                  }}
+                />
+                <span className="text-saffron text-xl animate-flame inline-block">
+                  🪔
+                </span>
+                <span className="font-body text-xs tracking-[0.3em] text-saffron uppercase">
+                  Explore
+                </span>
+                <span className="text-saffron text-xl animate-flame inline-block">
+                  🪔
+                </span>
+                <div
+                  className="h-px w-16"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, oklch(0.68 0.22 45 / 0.5), transparent)",
+                  }}
+                />
+              </div>
+              <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-3">
+                Browse by Category
+              </h2>
+              <p className="font-body text-muted-foreground max-w-md mx-auto text-sm sm:text-base">
+                From fresh flowers to complete puja kits — everything you need
+                for your daily devotion
+              </p>
+            </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {CATEGORIES.map((cat) => (
-              <motion.div key={cat.id} variants={itemVariants}>
-                <Card
-                  className={`cursor-pointer border ${cat.border} bg-gradient-to-br ${cat.color} hover:shadow-warm transition-all duration-300 hover:-translate-y-1 group`}
-                  onClick={() =>
-                    navigate({ to: "/catalog", search: { category: cat.id } })
-                  }
-                >
-                  <CardContent className="p-6 text-center">
-                    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">
-                      {cat.emoji}
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+              {CATEGORIES.map((cat) => (
+                <motion.div key={cat.id} variants={itemVariants}>
+                  <button
+                    type="button"
+                    className="w-full text-left cursor-pointer group rounded-2xl overflow-hidden shadow-card hover:shadow-elevated border border-border/60 hover:border-saffron/30 transition-all duration-350 hover:-translate-y-2 focus:outline-none focus:ring-2 focus:ring-saffron/30"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, oklch(1.0 0.004 72), oklch(0.98 0.01 72))",
+                    }}
+                    onClick={() =>
+                      navigate({ to: "/catalog", search: { category: cat.id } })
+                    }
+                    data-ocid={`home.category.${cat.id}.button`}
+                  >
+                    {/* Colored top accent — 2px taller */}
+                    <div className={`h-2 w-full ${cat.accentClass}`} />
+                    <div className="p-6">
+                      <div className="text-5xl mb-4 transition-transform duration-350 group-hover:scale-110 group-hover:animate-subtle-float block">
+                        {cat.emoji}
+                      </div>
+                      <h3 className="font-display text-sm font-bold text-foreground mb-1.5 leading-tight">
+                        {cat.label}
+                      </h3>
+                      <p className="font-body text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                        {cat.description}
+                      </p>
+                      <div className="mt-3 flex items-center gap-1 text-saffron opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-x-1 group-hover:translate-x-0">
+                        <span className="font-body text-xs font-semibold">
+                          Explore
+                        </span>
+                        <ArrowRight className="w-3 h-3" />
+                      </div>
                     </div>
-                    <h3 className="font-display text-base font-bold text-foreground mb-2">
-                      {cat.label}
-                    </h3>
-                    <p className="font-body text-xs text-muted-foreground leading-relaxed">
-                      {cat.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
       </section>
 
-      {/* Schedule Banner */}
-      <section className="py-8 container mx-auto px-4">
+      {/* ==================== TRUST BADGES — dark maroon section ==================== */}
+      <section className="maroon-section py-16">
+        <div className="container mx-auto px-4">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+          >
+            <motion.div variants={itemVariants} className="text-center mb-10">
+              {/* Gold-colored divider on dark bg */}
+              <div className="flex items-center gap-4 justify-center mb-4">
+                <div
+                  className="h-px w-16"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, transparent, oklch(0.84 0.16 84 / 0.5))",
+                  }}
+                />
+                <span
+                  className="text-xl"
+                  style={{ color: "oklch(0.84 0.16 84)" }}
+                >
+                  ✦
+                </span>
+                <span
+                  className="font-body text-xs tracking-[0.3em] uppercase"
+                  style={{ color: "oklch(0.84 0.16 84)" }}
+                >
+                  Our Promise
+                </span>
+                <span
+                  className="text-xl"
+                  style={{ color: "oklch(0.84 0.16 84)" }}
+                >
+                  ✦
+                </span>
+                <div
+                  className="h-px w-16"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, oklch(0.84 0.16 84 / 0.5), transparent)",
+                  }}
+                />
+              </div>
+              <h2 className="font-display text-3xl font-bold text-white mb-2">
+                Why Choose Us
+              </h2>
+              <p
+                className="font-body text-sm max-w-xs mx-auto"
+                style={{ color: "oklch(1 0 0 / 0.6)" }}
+              >
+                Trusted by thousands of families for their daily devotion
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+              {TRUST_BADGES.map((badge) => (
+                <motion.div
+                  key={badge.title}
+                  variants={itemVariants}
+                  className="rounded-2xl p-6 flex flex-col items-center text-center gap-4 hover:shadow-divine transition-all duration-350"
+                  style={{
+                    background: "oklch(1 0 0 / 0.07)",
+                    border: "1px solid oklch(1 0 0 / 0.1)",
+                  }}
+                >
+                  <div
+                    className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, oklch(0.88 0.18 82 / 0.3), oklch(0.68 0.22 45 / 0.35))",
+                      color: "oklch(0.88 0.18 82)",
+                    }}
+                  >
+                    {badge.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-display font-bold text-white text-base mb-1">
+                      {badge.title}
+                    </h3>
+                    <p
+                      className="font-body text-xs leading-relaxed"
+                      style={{ color: "oklch(1 0 0 / 0.62)" }}
+                    >
+                      {badge.desc}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ==================== SCHEDULE BANNER ==================== */}
+      <section className="py-10 container mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="relative rounded-2xl overflow-hidden">
+          <div className="relative rounded-3xl overflow-hidden">
             <img
               src="/assets/generated/schedule-banner.dim_1200x400.jpg"
               alt="Daily flower schedule"
               className="w-full h-64 sm:h-72 object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-maroon/85 via-maroon/60 to-transparent" />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to right, oklch(0.28 0.13 16 / 0.94) 0%, oklch(0.28 0.13 16 / 0.72) 55%, transparent 100%)",
+              }}
+            />
+
+            {/* Bottom-left dot pattern */}
+            <div className="absolute bottom-0 left-0 w-32 h-32 opacity-15 pointer-events-none">
+              <svg
+                viewBox="0 0 64 64"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="white"
+                role="img"
+                aria-label="Decorative dot pattern"
+              >
+                {Array.from({ length: 4 }).map((_, row) =>
+                  Array.from({ length: 4 }).map((_, col) => (
+                    <circle
+                      // biome-ignore lint/suspicious/noArrayIndexKey: decorative SVG pattern
+                      key={`${row}-${col}`}
+                      cx={col * 18 + 5}
+                      cy={row * 18 + 5}
+                      r="2.5"
+                    />
+                  )),
+                )}
+              </svg>
+            </div>
+
             <div className="absolute inset-0 flex items-center px-8 sm:px-12">
               <div className="max-w-lg">
-                <Badge className="bg-amber-400 text-amber-900 mb-3 font-body text-xs font-semibold">
-                  ✨ New Feature
+                <Badge
+                  className="mb-4 font-body text-xs font-semibold px-3 py-1.5 rounded-full border-0 flex items-center gap-2 w-fit"
+                  style={{
+                    background: "oklch(0.84 0.16 84 / 0.22)",
+                    color: "oklch(0.88 0.18 82)",
+                  }}
+                >
+                  <Calendar className="w-3 h-3" />
+                  Daily Schedule Feature
                 </Badge>
-                <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-3">
+                <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-3 leading-snug">
                   Schedule Daily Flowers & Haar
                 </h2>
-                <p className="font-body text-sm sm:text-base text-white/85 mb-5 leading-relaxed">
-                  Choose your products, set delivery times, pick your days — and
-                  get fresh flowers delivered for every morning puja and evening
-                  aarti.
+                <p className="font-body text-sm sm:text-base text-white/78 mb-6 leading-relaxed">
+                  Choose products, set delivery times, pick your days — get
+                  fresh flowers for every puja and aarti without reordering.
                 </p>
                 <Button
                   size="lg"
-                  className="bg-amber-400 hover:bg-amber-300 text-amber-900 font-body font-bold"
+                  className="font-body font-bold shadow-warm hover:shadow-elevated transition-all duration-300 hover:-translate-y-0.5 group border-0"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, oklch(0.88 0.18 82), oklch(0.80 0.2 76))",
+                    color: "oklch(0.22 0.08 28)",
+                  }}
                   onClick={() => navigate({ to: "/schedule" })}
                   data-ocid="home.scheduleFlowers.button"
                 >
                   Create Your Schedule
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
             </div>
@@ -264,79 +583,205 @@ export function HomePage() {
         </motion.div>
       </section>
 
-      {/* Book a Pandit Banner */}
-      <section className="py-8 container mx-auto px-4">
+      {/* ==================== BOOK A PANDIT BANNER ==================== */}
+      <section className="py-10 container mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-maroon via-maroon/95 to-amber-900 p-8 sm:p-10">
-            {/* Decorative elements */}
-            <div className="absolute right-6 top-4 text-5xl opacity-20 select-none">
+          <div
+            className="relative rounded-3xl overflow-hidden p-8 sm:p-10"
+            style={{
+              background:
+                "linear-gradient(135deg, oklch(0.25 0.13 16) 0%, oklch(0.32 0.12 20) 50%, oklch(0.42 0.16 38) 100%)",
+            }}
+          >
+            {/* Dot pattern overlay */}
+            <div
+              className="absolute inset-0 opacity-5"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle, white 1.5px, transparent 1.5px)",
+                backgroundSize: "24px 24px",
+              }}
+            />
+
+            {/* Decorative symbols */}
+            <div className="absolute right-6 top-4 text-6xl opacity-12 select-none">
               🕉️
             </div>
-            <div className="absolute right-20 bottom-4 text-4xl opacity-15 select-none">
+            {/* Diya with flame animation */}
+            <div className="absolute right-24 bottom-4 text-4xl opacity-15 select-none animate-flame">
               🪔
             </div>
-            <div className="absolute right-40 top-6 text-3xl opacity-10 select-none">
+            <div className="absolute right-44 top-8 text-3xl opacity-8 select-none">
               🌸
             </div>
-            <div className="relative max-w-lg">
-              <Badge className="bg-amber-400/20 text-amber-200 border-amber-400/30 mb-3 font-body text-xs font-semibold">
-                🙏 Experienced Pandits
-              </Badge>
-              <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-3">
-                Book a Pandit for Your Puja
-              </h2>
-              <p className="font-body text-sm sm:text-base text-white/80 mb-5 leading-relaxed">
-                Find experienced pandits nearby for Satyanarayan Katha, Griha
-                Pravesh, weddings, and more.
-              </p>
-              <Button
-                size="lg"
-                className="bg-amber-400 hover:bg-amber-300 text-amber-900 font-body font-bold"
-                onClick={() => navigate({ to: "/book-pandit" })}
-                data-ocid="home.bookpandit.button"
-              >
-                Find Pandit
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+
+            <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+              <div className="max-w-lg">
+                <Badge
+                  className="mb-4 font-body text-xs font-semibold px-3 py-1.5 rounded-full border flex items-center gap-2 w-fit"
+                  style={{
+                    background: "oklch(0.84 0.16 84 / 0.14)",
+                    borderColor: "oklch(0.84 0.16 84 / 0.3)",
+                    color: "oklch(0.88 0.18 82)",
+                  }}
+                >
+                  <MapPin className="w-3 h-3" />
+                  Experienced Pandits Nearby
+                </Badge>
+                <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-3 leading-snug">
+                  Book a Pandit for Your Puja
+                </h2>
+                <p
+                  className="font-body text-sm sm:text-base mb-5 leading-relaxed"
+                  style={{ color: "oklch(1 0 0 / 0.75)" }}
+                >
+                  Find experienced pandits for Satyanarayan Katha, Griha
+                  Pravesh, weddings, and every sacred ceremony.
+                </p>
+                {/* Trust signals */}
+                <div className="flex items-center gap-4 flex-wrap">
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Star
+                        key={i}
+                        className="w-3.5 h-3.5"
+                        style={{
+                          fill: "oklch(0.84 0.16 84)",
+                          color: "oklch(0.84 0.16 84)",
+                        }}
+                      />
+                    ))}
+                    <span
+                      className="font-body text-xs ml-1"
+                      style={{ color: "oklch(1 0 0 / 0.55)" }}
+                    >
+                      4.9/5
+                    </span>
+                  </div>
+                  <span
+                    className="font-body text-xs"
+                    style={{ color: "oklch(1 0 0 / 0.4)" }}
+                  >
+                    •
+                  </span>
+                  <span
+                    className="font-body text-xs flex items-center gap-1"
+                    style={{ color: "oklch(1 0 0 / 0.65)" }}
+                  >
+                    <BookOpen className="w-3 h-3" />
+                    500+ ceremonies performed
+                  </span>
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <Button
+                  size="lg"
+                  className="font-body font-bold shadow-warm hover:shadow-elevated transition-all duration-300 hover:-translate-y-0.5 group whitespace-nowrap border-0"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, oklch(0.88 0.18 82), oklch(0.80 0.2 76))",
+                    color: "oklch(0.22 0.08 28)",
+                  }}
+                  onClick={() => navigate({ to: "/book-pandit" })}
+                  data-ocid="home.bookpandit.button"
+                >
+                  Find a Pandit
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </div>
             </div>
           </div>
         </motion.div>
       </section>
 
-      {/* Festival tags */}
-      <section className="py-10 container mx-auto px-4">
-        <div className="text-center mb-6">
-          <h3 className="font-display text-xl font-semibold text-foreground">
-            Popular Occasions
-          </h3>
-        </div>
-        <div className="flex flex-wrap justify-center gap-2">
-          {[
-            "Navratri",
-            "Ganesh Chaturthi",
-            "Diwali",
-            "Satyanarayan Puja",
-            "Griha Pravesh",
-            "Durga Puja",
-            "Daily Puja",
-            "Festivals",
-          ].map((tag) => (
-            <Badge
-              key={tag}
-              variant="outline"
-              className="px-4 py-2 text-sm font-body cursor-pointer border-saffron text-saffron hover:bg-saffron hover:text-white transition-colors"
-              onClick={() =>
-                navigate({ to: "/catalog", search: { category: undefined } })
-              }
-            >
-              {tag}
-            </Badge>
-          ))}
+      {/* ==================== SHOP BY OCCASION ==================== */}
+      <section className="devotional-section py-14">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="text-center mb-8">
+              <div className="flex items-center gap-4 justify-center mb-4">
+                <div
+                  className="h-px w-16"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, transparent, oklch(0.68 0.22 45 / 0.5))",
+                  }}
+                />
+                <span className="text-saffron text-xl">🕉️</span>
+                <span className="font-body text-xs tracking-[0.3em] text-saffron uppercase">
+                  Occasions
+                </span>
+                <span className="text-saffron text-xl">🕉️</span>
+                <div
+                  className="h-px w-16"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, oklch(0.68 0.22 45 / 0.5), transparent)",
+                  }}
+                />
+              </div>
+              <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
+                Shop by Occasion
+              </h3>
+            </div>
+            <div className="flex flex-nowrap overflow-x-auto sm:flex-wrap sm:justify-center gap-2.5 pb-2 sm:pb-0">
+              {OCCASIONS.map((tag, idx) => (
+                <button
+                  type="button"
+                  key={tag.label}
+                  className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-body font-medium border transition-all duration-200 cursor-pointer whitespace-nowrap"
+                  style={
+                    idx % 2 === 0
+                      ? {
+                          borderColor: "oklch(0.68 0.22 45 / 0.4)",
+                          color: "oklch(0.68 0.22 45)",
+                        }
+                      : {
+                          borderColor: "oklch(0.28 0.13 16 / 0.35)",
+                          color: "oklch(0.28 0.13 16)",
+                        }
+                  }
+                  onMouseEnter={(e) => {
+                    const t = e.currentTarget;
+                    t.style.background = "oklch(0.28 0.13 16)";
+                    t.style.borderColor = "oklch(0.28 0.13 16)";
+                    t.style.color = "white";
+                  }}
+                  onMouseLeave={(e) => {
+                    const t = e.currentTarget;
+                    t.style.background = "transparent";
+                    if (idx % 2 === 0) {
+                      t.style.borderColor = "oklch(0.68 0.22 45 / 0.4)";
+                      t.style.color = "oklch(0.68 0.22 45)";
+                    } else {
+                      t.style.borderColor = "oklch(0.28 0.13 16 / 0.35)";
+                      t.style.color = "oklch(0.28 0.13 16)";
+                    }
+                  }}
+                  onClick={() =>
+                    navigate({
+                      to: "/catalog",
+                      search: { category: undefined },
+                    })
+                  }
+                  data-ocid="home.occasion.button"
+                >
+                  <span>{tag.emoji}</span>
+                  {tag.label}
+                </button>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>

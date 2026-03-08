@@ -18,6 +18,7 @@ export default {
       fontFamily: {
         display: ["Fraunces", "Georgia", "serif"],
         body: ["Plus Jakarta Sans", "system-ui", "sans-serif"],
+        accent: ["Bricolage Grotesque", "system-ui", "sans-serif"],
       },
       colors: {
         border: "oklch(var(--border))",
@@ -71,21 +72,22 @@ export default {
           ring: "oklch(var(--sidebar-ring))",
         },
         saffron: {
-          DEFAULT: "oklch(0.72 0.21 50)",
-          dark: "oklch(0.55 0.2 40)",
-          light: "oklch(0.88 0.15 55)",
+          DEFAULT: "oklch(0.68 0.22 45)",
+          dark: "oklch(0.52 0.21 38)",
+          light: "oklch(0.84 0.16 55)",
         },
         maroon: {
-          DEFAULT: "oklch(0.35 0.14 20)",
-          light: "oklch(0.50 0.13 25)",
+          DEFAULT: "oklch(0.28 0.13 16)",
+          light: "oklch(0.42 0.12 22)",
         },
         gold: {
-          DEFAULT: "oklch(0.82 0.15 88)",
-          dark: "oklch(0.65 0.16 80)",
+          DEFAULT: "oklch(0.84 0.16 84)",
+          dark: "oklch(0.68 0.17 78)",
+          accent: "oklch(0.88 0.18 82)",
         },
         cream: {
-          DEFAULT: "oklch(0.97 0.012 75)",
-          dark: "oklch(0.92 0.02 70)",
+          DEFAULT: "oklch(0.975 0.014 72)",
+          dark: "oklch(0.925 0.022 68)",
         },
       },
       borderRadius: {
@@ -95,8 +97,12 @@ export default {
       },
       boxShadow: {
         xs: "0 1px 2px 0 rgba(0,0,0,0.05)",
-        warm: "0 4px 24px oklch(0.72 0.21 50 / 0.15), 0 1px 4px oklch(0.35 0.14 20 / 0.08)",
-        card: "0 2px 12px oklch(0.72 0.21 50 / 0.1), 0 1px 3px oklch(0.35 0.14 20 / 0.06)",
+        warm: "0 4px 24px oklch(0.68 0.22 45 / 0.2), 0 1px 4px oklch(0.28 0.13 16 / 0.1)",
+        card: "0 2px 16px oklch(0.68 0.22 45 / 0.1), 0 1px 4px oklch(0.28 0.13 16 / 0.06)",
+        "glow-saffron": "0 0 20px oklch(0.68 0.22 45 / 0.35), 0 4px 24px oklch(0.68 0.22 45 / 0.18)",
+        glass: "0 8px 32px oklch(0.28 0.13 16 / 0.12), inset 0 1px 0 oklch(1 0 0 / 0.12)",
+        elevated: "0 20px 60px oklch(0.28 0.13 16 / 0.16), 0 4px 16px oklch(0.28 0.13 16 / 0.1)",
+        divine: "0 0 40px oklch(0.84 0.16 84 / 0.2), 0 8px 32px oklch(0.28 0.13 16 / 0.12)",
       },
       keyframes: {
         "accordion-down": {
@@ -115,12 +121,34 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "pulse-glow": {
+          "0%, 100%": { boxShadow: "0 0 0 0 oklch(0.68 0.22 45 / 0.4)" },
+          "50%": { boxShadow: "0 0 0 8px oklch(0.68 0.22 45 / 0)" },
+        },
+        "subtle-float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-6px)" },
+        },
+        "slide-down": {
+          from: { transform: "translateY(-100%)" },
+          to: { transform: "translateY(0)" },
+        },
+        "flame-flicker": {
+          "0%, 100%": { opacity: "1", transform: "scaleY(1) scaleX(1)" },
+          "25%": { opacity: "0.95", transform: "scaleY(1.04) scaleX(0.97)" },
+          "50%": { opacity: "0.98", transform: "scaleY(0.97) scaleX(1.02)" },
+          "75%": { opacity: "0.96", transform: "scaleY(1.02) scaleX(0.98)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "float-up": "float-up 0.5s ease-out",
         shimmer: "shimmer 2s linear infinite",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "subtle-float": "subtle-float 4s ease-in-out infinite",
+        "slide-down": "slide-down 0.3s ease-out",
+        "flame-flicker": "flame-flicker 2s ease-in-out infinite",
       },
     },
   },
