@@ -7,6 +7,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Package, ShoppingBag } from "lucide-react";
 import { motion } from "motion/react";
 import { OrderStatus } from "../backend.d";
+import { LoginPrompt } from "../components/LoginPrompt";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useMyOrders } from "../hooks/useQueries";
 
@@ -49,25 +50,18 @@ function OrderSkeleton() {
 export function MyOrdersPage() {
   const navigate = useNavigate();
   const { data: orders = [], isLoading } = useMyOrders();
-  const { identity, login } = useInternetIdentity();
+  const { identity } = useInternetIdentity();
 
   if (!identity) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center container mx-auto px-4">
-        <div className="text-5xl mb-4">🔒</div>
-        <h2 className="font-display text-2xl font-bold text-foreground mb-3">
-          Login Required
-        </h2>
-        <p className="font-body text-muted-foreground mb-6 text-center max-w-xs">
-          Please login to view your order history
-        </p>
-        <Button
-          className="bg-saffron hover:bg-saffron-dark text-white font-body"
-          onClick={() => login()}
-        >
-          Login
-        </Button>
-      </div>
+      <LoginPrompt
+        title="Login to View Your Orders"
+        description="Track your puja samagri orders, delivery status, and order history."
+        showBackButton
+        onBack={() =>
+          navigate({ to: "/catalog", search: { category: undefined } })
+        }
+      />
     );
   }
 

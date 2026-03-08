@@ -35,9 +35,11 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useRef, useState } from "react";
+import { LoginPrompt } from "../components/LoginPrompt";
 import { PANDITS, type Pandit } from "../data/pandits";
 import { PANDIT_IMAGES } from "../data/productImages";
 import { type PanditBooking, useBookings } from "../hooks/useBookings";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { usePanditAvailabilities } from "../hooks/useQueries";
 
 const CEREMONY_TYPES = [
@@ -725,12 +727,14 @@ function BookingListItem({
 
 export function BookPanditPage() {
   const { bookings, addBooking, cancelBooking } = useBookings();
+  const { identity } = useInternetIdentity();
   const { data: availabilities } = usePanditAvailabilities();
   const panditsWithAvailability = PANDITS.map((p) => {
     const backendAvail = availabilities?.find((a) => a.panditId === p.id);
     return backendAvail ? { ...p, available: backendAvail.available } : p;
   });
   const [selectedPandit, setSelectedPandit] = useState<Pandit | null>(null);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState<{
     booking: PanditBooking;
     pandit: Pandit;
@@ -739,6 +743,14 @@ export function BookPanditPage() {
   const formRef = useRef<HTMLDivElement>(null);
 
   function handleBookNow(pandit: Pandit) {
+    if (!identity) {
+      setShowLoginPrompt(true);
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+      return;
+    }
+    setShowLoginPrompt(false);
     setSelectedPandit(pandit);
     setConfirmedBooking(null);
     setTimeout(() => {
@@ -877,8 +889,20 @@ export function BookPanditPage() {
                 </div>
               )}
 
+              {/* Login prompt when unauthenticated user clicks Book Now */}
+              {showLoginPrompt && !identity && (
+                <div ref={formRef}>
+                  <LoginPrompt
+                    title="Login to Book a Pandit"
+                    description="Login to schedule a pandit for your ceremony and manage your bookings."
+                    showBackButton
+                    onBack={() => setShowLoginPrompt(false)}
+                  />
+                </div>
+              )}
+
               {/* Booking form */}
-              {selectedPandit && !confirmedBooking && (
+              {selectedPandit && !confirmedBooking && identity && (
                 <div ref={formRef}>
                   <h2 className="font-display text-2xl font-bold text-foreground mb-4">
                     Complete Your Booking

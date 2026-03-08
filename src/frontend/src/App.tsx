@@ -6,12 +6,16 @@ import {
   createRoute,
   createRouter,
 } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 import { CartDrawer } from "./components/CartDrawer";
 import { Footer } from "./components/Footer";
 import { Navbar } from "./components/Navbar";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { CartDrawerProvider } from "./context/CartContext";
 import { useEnsureUserRole } from "./hooks/useEnsureUserRole";
+import { useInternetIdentity } from "./hooks/useInternetIdentity";
 import { AdminPage } from "./pages/AdminPage";
 import { BookPanditPage } from "./pages/BookPanditPage";
 import { CatalogPage } from "./pages/CatalogPage";
@@ -22,12 +26,77 @@ import { OrderConfirmationPage } from "./pages/OrderConfirmationPage";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { SchedulePage } from "./pages/SchedulePage";
 
+// Floating "Logging In" status banner
+function LoginStatusBanner() {
+  const { isLoggingIn, isLoginSuccess, isLoginError } = useInternetIdentity();
+  const toastIdRef = useRef<string | number | null>(null);
+
+  useEffect(() => {
+    if (isLoggingIn) {
+      toastIdRef.current = toast.loading(
+        "Opening Internet Identity… Complete login in the new tab",
+        {
+          duration: Number.POSITIVE_INFINITY,
+          description: "Return to this page after completing login.",
+        },
+      );
+    } else {
+      if (toastIdRef.current !== null) {
+        toast.dismiss(toastIdRef.current);
+        toastIdRef.current = null;
+      }
+      if (isLoginSuccess) {
+        toast.success("Welcome back! You're now logged in.", {
+          duration: 3000,
+        });
+      }
+      if (isLoginError) {
+        toast.error("Login was cancelled or failed. Please try again.", {
+          duration: 4000,
+        });
+      }
+    }
+  }, [isLoggingIn, isLoginSuccess, isLoginError]);
+
+  return (
+    <AnimatePresence>
+      {isLoggingIn && (
+        <motion.div
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="fixed top-0 left-0 right-0 z-[100] pointer-events-none"
+          aria-live="polite"
+          aria-label="Login in progress"
+        >
+          <div
+            className="w-full text-center py-2 px-4 font-body text-xs font-medium text-white"
+            style={{
+              background:
+                "linear-gradient(90deg, oklch(0.68 0.22 45) 0%, oklch(0.42 0.12 22) 50%, oklch(0.52 0.21 38) 100%)",
+            }}
+          >
+            <span className="inline-flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
+              Opening Internet Identity in a new tab — please complete login
+              there
+              <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
+            </span>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 // Root layout — also ensures logged-in users get #user role automatically
 function RootLayout() {
   useEnsureUserRole();
   return (
     <CartDrawerProvider>
       <div className="min-h-screen flex flex-col bg-background">
+        <LoginStatusBanner />
         <Navbar />
         <main className="flex-1">
           <Outlet />

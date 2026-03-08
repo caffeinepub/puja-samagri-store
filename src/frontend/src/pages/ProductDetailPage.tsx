@@ -503,9 +503,15 @@ export function ProductDetailPage() {
             action: { label: "View Cart", onClick: openCart },
           });
         },
-        onError: () => {
+        onError: (err) => {
           setIsAdding(false);
-          toast.error("Failed to add to cart. Please try again.");
+          const msg =
+            err instanceof Error ? err.message : "Failed to add to cart";
+          toast.error(
+            msg.includes("not ready")
+              ? "Still connecting, please try again in a moment."
+              : "Failed to add to cart. Please try again.",
+          );
         },
       },
     );

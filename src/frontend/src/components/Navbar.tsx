@@ -1,7 +1,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
+  Loader2,
   LogIn,
   LogOut,
   Menu,
@@ -184,20 +191,42 @@ export function Navbar() {
                   </Button>
                 </div>
               ) : (
-                <Button
-                  size="sm"
-                  className="hidden sm:flex font-body text-sm font-semibold text-white border-0 px-5"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, oklch(0.68 0.22 45), oklch(0.42 0.12 22))",
-                  }}
-                  onClick={() => login()}
-                  disabled={isLoggingIn}
-                  data-ocid="nav.login.button"
-                >
-                  <LogIn className="w-4 h-4 mr-1" />
-                  {isLoggingIn ? "Logging in..." : "Login"}
-                </Button>
+                <TooltipProvider delayDuration={300}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="sm"
+                        className="hidden sm:flex font-body text-sm font-semibold text-white border-0 px-5 transition-all duration-200 hover:scale-[1.03] hover:shadow-warm active:scale-[0.97]"
+                        style={{
+                          background:
+                            "linear-gradient(135deg, oklch(0.68 0.22 45), oklch(0.42 0.12 22))",
+                        }}
+                        onClick={() => login()}
+                        disabled={isLoggingIn}
+                        aria-label="Opens Internet Identity in a new tab"
+                        data-ocid="nav.login.button"
+                      >
+                        {isLoggingIn ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                            Connecting…
+                          </>
+                        ) : (
+                          <>
+                            <LogIn className="w-4 h-4 mr-1" />
+                            Login
+                          </>
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="bottom"
+                      className="font-body text-xs max-w-[180px] text-center"
+                    >
+                      Opens Internet Identity in a new tab
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               )}
 
               {/* Mobile Menu Toggle */}
@@ -271,7 +300,7 @@ export function Navbar() {
                   ) : (
                     <Button
                       size="sm"
-                      className="w-full font-body text-sm font-semibold text-white border-0"
+                      className="w-full font-body text-sm font-semibold text-white border-0 transition-all duration-200"
                       style={{
                         background:
                           "linear-gradient(135deg, oklch(0.68 0.22 45), oklch(0.42 0.12 22))",
@@ -281,9 +310,19 @@ export function Navbar() {
                         setMobileOpen(false);
                       }}
                       disabled={isLoggingIn}
+                      aria-label="Opens Internet Identity in a new tab"
                     >
-                      <LogIn className="w-4 h-4 mr-1" />
-                      {isLoggingIn ? "Logging in..." : "Login"}
+                      {isLoggingIn ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                          Connecting…
+                        </>
+                      ) : (
+                        <>
+                          <LogIn className="w-4 h-4 mr-1" />
+                          Login
+                        </>
+                      )}
                     </Button>
                   )}
                 </div>

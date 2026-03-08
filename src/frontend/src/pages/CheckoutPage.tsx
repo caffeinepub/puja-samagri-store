@@ -9,6 +9,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Loader2, Package, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { LoginPrompt } from "../components/LoginPrompt";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useAllProducts, useCart, usePlaceOrder } from "../hooks/useQueries";
 
@@ -79,21 +80,14 @@ export function CheckoutPage() {
 
   if (!identity) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center container mx-auto px-4">
-        <div className="text-5xl mb-4">🔒</div>
-        <h2 className="font-display text-2xl font-bold text-foreground mb-3">
-          Login Required
-        </h2>
-        <p className="font-body text-muted-foreground mb-6 text-center max-w-xs">
-          Please login to complete your checkout and place an order
-        </p>
-        <Button
-          className="bg-saffron hover:bg-saffron-dark text-white font-body"
-          onClick={() => login()}
-        >
-          Login to Continue
-        </Button>
-      </div>
+      <LoginPrompt
+        title="Login to Checkout"
+        description="Securely complete your order with Internet Identity — your gateway to the decentralized web."
+        showBackButton
+        onBack={() =>
+          navigate({ to: "/catalog", search: { category: undefined } })
+        }
+      />
     );
   }
 

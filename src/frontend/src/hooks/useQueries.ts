@@ -72,7 +72,7 @@ export function useCart() {
 }
 
 export function useAddToCart() {
-  const { actor } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
   const { identity } = useInternetIdentity();
   const queryClient = useQueryClient();
   return useMutation({
@@ -81,8 +81,34 @@ export function useAddToCart() {
       quantity,
     }: { productId: bigint; quantity: bigint }) => {
       if (!identity) throw new Error("Not authenticated");
-      if (!actor) throw new Error("Actor not ready");
-      await actor.addToCart(productId, quantity);
+
+      // Wait for actor to be ready with the authenticated identity (up to 8s)
+      let resolvedActor = actor;
+      if (!resolvedActor || actorFetching) {
+        let waited = 0;
+        while (waited < 8000) {
+          await new Promise((r) => setTimeout(r, 300));
+          waited += 300;
+          // Re-read from the query cache
+          const cached = queryClient.getQueryData<typeof actor>([
+            "actor",
+            identity.getPrincipal().toString(),
+          ]);
+          if (cached) {
+            resolvedActor = cached;
+            break;
+          }
+        }
+      }
+
+      if (!resolvedActor) throw new Error("Actor not ready, please try again");
+
+      // Ensure the caller has the #user role before adding to cart.
+      // This is critical: if ensureCallerIsUser throws, the user is anonymous
+      // (should not happen here) or the call genuinely failed.
+      await resolvedActor.ensureCallerIsUser();
+
+      await resolvedActor.addToCart(productId, quantity);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
@@ -122,6 +148,7 @@ export function useClearCart() {
 
 export function usePlaceOrder() {
   const { actor } = useActor();
+  const { identity } = useInternetIdentity();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
@@ -133,7 +160,13 @@ export function usePlaceOrder() {
       address: string;
       phone: string;
     }) => {
+      if (!identity) throw new Error("Not authenticated");
       if (!actor) throw new Error("Not authenticated");
+      try {
+        await actor.ensureCallerIsUser();
+      } catch {
+        // Silently ignore — user may already be registered or have admin role
+      }
       await actor.placeOrder(customerName, address, phone);
     },
     onSuccess: () => {
@@ -276,6 +309,11 @@ export function useAddReview() {
     }: { productId: bigint; rating: bigint; comment: string }) => {
       if (!identity) throw new Error("Not authenticated");
       if (!actor) throw new Error("Actor not ready");
+      try {
+        await actor.ensureCallerIsUser();
+      } catch {
+        // Silently ignore — user may already be registered or have admin role
+      }
       await actor.addReview(productId, rating, comment);
     },
     onSuccess: (_, variables) => {
