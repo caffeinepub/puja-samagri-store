@@ -1,16 +1,15 @@
 import Text "mo:core/Text";
 import Array "mo:core/Array";
 import Iter "mo:core/Iter";
-import Map "mo:core/Map";
 import Nat "mo:core/Nat";
+import Map "mo:core/Map";
+import Principal "mo:core/Principal";
 import List "mo:core/List";
 import Runtime "mo:core/Runtime";
-import Order "mo:core/Order";
-import Principal "mo:core/Principal";
+import Time "mo:core/Time";
 import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
-
-
+import Order "mo:core/Order";
 
 actor {
   type ProductCategory = {
@@ -77,20 +76,45 @@ actor {
     reviewer : Principal;
   };
 
+  type PrasadOrderStatus = {
+    #pending : ();
+    #confirmed : ();
+    #dispatched : ();
+    #delivered : ();
+    #cancelled : ();
+  };
+
+  type PrasadOrder = {
+    id : Nat;
+    userId : Principal;
+    templeId : Nat;
+    templeName : Text;
+    prasadItemName : Text;
+    quantity : Nat;
+    pricePerBox : Nat;
+    totalPrice : Nat;
+    deliveryAddress : Text;
+    contactNumber : Text;
+    instructions : Text;
+    status : PrasadOrderStatus;
+    createdAt : Int;
+  };
+
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
-  // Storage
   let productStore = Map.empty<Nat, Product>();
   let cartStore = Map.empty<Principal, List.List<CartItem>>();
   let orderStore = Map.empty<Nat, Order>();
   let userProfiles = Map.empty<Principal, UserProfile>();
   let panditAvailabilityStore = Map.empty<Text, Bool>();
-  let reviewStore = Map.empty<Nat, List.List<Review>>(); // productId -> List<Review>
+  let reviewStore = Map.empty<Nat, List.List<Review>>();
+  let prasadOrderStore = Map.empty<Nat, PrasadOrder>();
 
   var nextProductId = 1;
   var nextOrderId = 1;
   var nextReviewId = 1;
+  var nextPrasadOrderId = 1;
 
   module Product {
     public func compare(p1 : Product, p2 : Product) : Order.Order {
@@ -344,9 +368,82 @@ actor {
     };
   };
 
+  // Prasad Booking Features
+  public shared ({ caller }) func bookPrasad(templeId : Nat, templeName : Text, prasadItemName : Text, quantity : Nat, pricePerBox : Nat, deliveryAddress : Text, contactNumber : Text, instructions : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can book prasad");
+    };
+    if (quantity == 0 or quantity > 10) { Runtime.trap("Quantity must be between 1 and 10") };
+
+    let totalPrice = pricePerBox * quantity;
+
+    let prasadOrder : PrasadOrder = {
+      id = nextPrasadOrderId;
+      userId = caller;
+      templeId;
+      templeName;
+      prasadItemName;
+      quantity;
+      pricePerBox;
+      totalPrice;
+      deliveryAddress;
+      contactNumber;
+      instructions;
+      status = #pending;
+      createdAt = Time.now();
+    };
+
+    prasadOrderStore.add(nextPrasadOrderId, prasadOrder);
+    nextPrasadOrderId += 1;
+  };
+
+  public query ({ caller }) func getPrasadOrders() : async [PrasadOrder] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view prasad orders");
+    };
+    prasadOrderStore.values().toArray().filter(func(order) { order.userId == caller });
+  };
+
+  public query ({ caller }) func getAllPrasadOrders() : async [PrasadOrder] {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can view all prasad orders");
+    };
+    prasadOrderStore.values().toArray();
+  };
+
+  public shared ({ caller }) func cancelPrasadOrder(orderId : Nat) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can cancel orders");
+    };
+    switch (prasadOrderStore.get(orderId)) {
+      case (null) { Runtime.trap("Order not found") };
+      case (?order) {
+        if (order.userId != caller) {
+          Runtime.trap("Unauthorized: Can only cancel your own orders");
+        };
+        if (order.status != #pending and order.status != #confirmed) {
+          Runtime.trap("Order cannot be cancelled at this stage");
+        };
+        let updatedOrder = { order with status = #cancelled };
+        prasadOrderStore.add(orderId, updatedOrder);
+      };
+    };
+  };
+
+  public shared ({ caller }) func updatePrasadOrderStatus(orderId : Nat, status : PrasadOrderStatus) : async () {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can update order status");
+    };
+    switch (prasadOrderStore.get(orderId)) {
+      case (null) { Runtime.trap("Order not found") };
+      case (?order) {
+        let updatedOrder = { order with status };
+        prasadOrderStore.add(orderId, updatedOrder);
+      };
+    };
+  };
+
   // Self-Service User Registration
-  // This function allows authenticated (non-anonymous) users to self-register as #user role
-  // We bypass the admin-only check in assignRole by using the canister's own principal
   public shared ({ caller }) func ensureCallerIsUser() : async () {
     if (caller.isAnonymous()) {
       Runtime.trap("Anonymous users cannot register as users. Please login with an II or wallet first.");
@@ -358,8 +455,7 @@ actor {
       case (null) {
         accessControlState.userRoles.add(caller, #user);
       };
-      case (?_) { () }; // Already a user or admin, do nothing
+      case (?_) { () };
     };
   };
 };
-

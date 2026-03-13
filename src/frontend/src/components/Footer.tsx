@@ -15,6 +15,7 @@ const SERVICES = [
   "Ritual Books",
   "Occasion Packages",
   "Pandit Booking",
+  "Prasad Booking",
 ];
 
 export function Footer() {

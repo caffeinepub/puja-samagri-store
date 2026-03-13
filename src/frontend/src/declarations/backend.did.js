@@ -51,6 +51,28 @@ export const Order = IDL.Record({
   'phone' : IDL.Text,
   'items' : IDL.Vec(OrderItem),
 });
+export const PrasadOrderStatus = IDL.Variant({
+  'cancelled' : IDL.Null,
+  'pending' : IDL.Null,
+  'dispatched' : IDL.Null,
+  'delivered' : IDL.Null,
+  'confirmed' : IDL.Null,
+});
+export const PrasadOrder = IDL.Record({
+  'id' : IDL.Nat,
+  'status' : PrasadOrderStatus,
+  'deliveryAddress' : IDL.Text,
+  'userId' : IDL.Principal,
+  'createdAt' : IDL.Int,
+  'instructions' : IDL.Text,
+  'templeName' : IDL.Text,
+  'pricePerBox' : IDL.Nat,
+  'quantity' : IDL.Nat,
+  'templeId' : IDL.Nat,
+  'contactNumber' : IDL.Text,
+  'prasadItemName' : IDL.Text,
+  'totalPrice' : IDL.Nat,
+});
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 export const CartItem = IDL.Record({
   'productId' : IDL.Nat,
@@ -85,9 +107,25 @@ export const idlService = IDL.Service({
   'addReview' : IDL.Func([IDL.Nat, IDL.Nat, IDL.Text], [], []),
   'addToCart' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'bookPrasad' : IDL.Func(
+      [
+        IDL.Nat,
+        IDL.Text,
+        IDL.Text,
+        IDL.Nat,
+        IDL.Nat,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+      ],
+      [],
+      [],
+    ),
+  'cancelPrasadOrder' : IDL.Func([IDL.Nat], [], []),
   'clearCart' : IDL.Func([], [], []),
   'ensureCallerIsUser' : IDL.Func([], [], []),
   'getAllOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
+  'getAllPrasadOrders' : IDL.Func([], [IDL.Vec(PrasadOrder)], ['query']),
   'getAllProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
@@ -98,6 +136,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(PanditAvailability)],
       ['query'],
     ),
+  'getPrasadOrders' : IDL.Func([], [IDL.Vec(PrasadOrder)], ['query']),
   'getProductReviews' : IDL.Func([IDL.Nat], [IDL.Vec(Review)], ['query']),
   'getProductsByCategory' : IDL.Func(
       [ProductCategory],
@@ -116,6 +155,7 @@ export const idlService = IDL.Service({
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'setPanditAvailability' : IDL.Func([IDL.Text, IDL.Bool], [], []),
   'updateOrderStatus' : IDL.Func([IDL.Nat, OrderStatus], [], []),
+  'updatePrasadOrderStatus' : IDL.Func([IDL.Nat, PrasadOrderStatus], [], []),
   'updateProduct' : IDL.Func(
       [
         IDL.Nat,
@@ -175,6 +215,28 @@ export const idlFactory = ({ IDL }) => {
     'phone' : IDL.Text,
     'items' : IDL.Vec(OrderItem),
   });
+  const PrasadOrderStatus = IDL.Variant({
+    'cancelled' : IDL.Null,
+    'pending' : IDL.Null,
+    'dispatched' : IDL.Null,
+    'delivered' : IDL.Null,
+    'confirmed' : IDL.Null,
+  });
+  const PrasadOrder = IDL.Record({
+    'id' : IDL.Nat,
+    'status' : PrasadOrderStatus,
+    'deliveryAddress' : IDL.Text,
+    'userId' : IDL.Principal,
+    'createdAt' : IDL.Int,
+    'instructions' : IDL.Text,
+    'templeName' : IDL.Text,
+    'pricePerBox' : IDL.Nat,
+    'quantity' : IDL.Nat,
+    'templeId' : IDL.Nat,
+    'contactNumber' : IDL.Text,
+    'prasadItemName' : IDL.Text,
+    'totalPrice' : IDL.Nat,
+  });
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
   const CartItem = IDL.Record({ 'productId' : IDL.Nat, 'quantity' : IDL.Nat });
   const PanditAvailability = IDL.Record({
@@ -206,9 +268,25 @@ export const idlFactory = ({ IDL }) => {
     'addReview' : IDL.Func([IDL.Nat, IDL.Nat, IDL.Text], [], []),
     'addToCart' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'bookPrasad' : IDL.Func(
+        [
+          IDL.Nat,
+          IDL.Text,
+          IDL.Text,
+          IDL.Nat,
+          IDL.Nat,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+        ],
+        [],
+        [],
+      ),
+    'cancelPrasadOrder' : IDL.Func([IDL.Nat], [], []),
     'clearCart' : IDL.Func([], [], []),
     'ensureCallerIsUser' : IDL.Func([], [], []),
     'getAllOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
+    'getAllPrasadOrders' : IDL.Func([], [IDL.Vec(PrasadOrder)], ['query']),
     'getAllProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
@@ -219,6 +297,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(PanditAvailability)],
         ['query'],
       ),
+    'getPrasadOrders' : IDL.Func([], [IDL.Vec(PrasadOrder)], ['query']),
     'getProductReviews' : IDL.Func([IDL.Nat], [IDL.Vec(Review)], ['query']),
     'getProductsByCategory' : IDL.Func(
         [ProductCategory],
@@ -237,6 +316,7 @@ export const idlFactory = ({ IDL }) => {
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'setPanditAvailability' : IDL.Func([IDL.Text, IDL.Bool], [], []),
     'updateOrderStatus' : IDL.Func([IDL.Nat, OrderStatus], [], []),
+    'updatePrasadOrderStatus' : IDL.Func([IDL.Nat, PrasadOrderStatus], [], []),
     'updateProduct' : IDL.Func(
         [
           IDL.Nat,

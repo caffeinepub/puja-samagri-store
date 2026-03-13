@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   ClipboardList,
   Lock,
+  MapPin,
   Package,
   RefreshCw,
   ShieldCheck,
@@ -24,15 +25,23 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { type Order, OrderStatus, type Product } from "../backend.d";
+import {
+  type Order,
+  OrderStatus,
+  type PrasadOrder,
+  PrasadOrderStatus,
+  type Product,
+} from "../backend.d";
 import { PANDITS } from "../data/pandits";
 import {
   useAllOrders,
+  useAllPrasadOrders,
   useAllProducts,
   useIsAdmin,
   usePanditAvailabilities,
   useSetPanditAvailability,
   useUpdateOrderStatus,
+  useUpdatePrasadOrderStatus,
   useUpdateProductStock,
 } from "../hooks/useQueries";
 
@@ -69,6 +78,40 @@ function orderStatusConfig(status: OrderStatus) {
     },
   };
   return map[status] ?? map[OrderStatus.pending];
+}
+
+function prasadStatusConfig(status: PrasadOrderStatus) {
+  const map: Record<
+    PrasadOrderStatus,
+    { label: string; className: string; icon: string }
+  > = {
+    [PrasadOrderStatus.pending]: {
+      label: "Pending",
+      className: "bg-amber-100 text-amber-800 border-amber-200",
+      icon: "⏳",
+    },
+    [PrasadOrderStatus.confirmed]: {
+      label: "Confirmed",
+      className: "bg-blue-100 text-blue-800 border-blue-200",
+      icon: "✅",
+    },
+    [PrasadOrderStatus.dispatched]: {
+      label: "Dispatched",
+      className: "bg-purple-100 text-purple-800 border-purple-200",
+      icon: "🚚",
+    },
+    [PrasadOrderStatus.delivered]: {
+      label: "Delivered",
+      className: "bg-green-100 text-green-800 border-green-200",
+      icon: "📦",
+    },
+    [PrasadOrderStatus.cancelled]: {
+      label: "Cancelled",
+      className: "bg-red-100 text-red-700 border-red-200",
+      icon: "❌",
+    },
+  };
+  return map[status] ?? map[PrasadOrderStatus.pending];
 }
 
 // ─── Orders Tab ───────────────────────────────────────────────────────────────
@@ -598,6 +641,275 @@ function ProductsTab() {
   );
 }
 
+// ─── Prasad Orders Tab ────────────────────────────────────────────────────────
+
+type PrasadFilter = "all" | PrasadOrderStatus;
+
+function PrasadOrderRow({
+  order,
+  index,
+  onStatusChange,
+  isUpdating,
+}: {
+  order: PrasadOrder;
+  index: number;
+  onStatusChange: (orderId: bigint, status: PrasadOrderStatus) => void;
+  isUpdating: boolean;
+}) {
+  const config = prasadStatusConfig(order.status);
+  const isFinal =
+    order.status === PrasadOrderStatus.delivered ||
+    order.status === PrasadOrderStatus.cancelled;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        delay: index * 0.04,
+        duration: 0.35,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      data-ocid={`admin.prasad.order.item.${index + 1}`}
+    >
+      <Card className="border-border bg-card hover:shadow-card transition-all duration-200">
+        <CardContent className="p-4">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+            {/* Order info */}
+            <div className="flex-1 min-w-0 space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-display text-sm font-bold text-foreground">
+                  #{order.id.toString()}
+                </span>
+                <Badge className={`${config.className} text-xs border`}>
+                  {config.icon} {config.label}
+                </Badge>
+              </div>
+              {/* Temple & prasad item */}
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-saffron shrink-0" />
+                <span className="font-display text-sm font-semibold text-foreground/90">
+                  {order.templeName}
+                </span>
+                <span className="text-muted-foreground font-body text-xs">
+                  ·
+                </span>
+                <span className="font-body text-xs text-muted-foreground">
+                  {order.prasadItemName}
+                </span>
+              </div>
+              {/* Quantity & price */}
+              <div className="flex items-center gap-4 flex-wrap text-xs font-body text-muted-foreground">
+                <span>
+                  Qty:{" "}
+                  <span className="font-semibold text-foreground/80">
+                    {order.quantity.toString()}
+                  </span>
+                </span>
+                <span className="font-display text-saffron font-bold text-sm">
+                  {formatPrice(order.totalPrice)}
+                </span>
+                <span>📱 {order.contactNumber}</span>
+              </div>
+              {/* Delivery address */}
+              <p className="font-body text-xs text-muted-foreground line-clamp-1">
+                📍 {order.deliveryAddress}
+              </p>
+            </div>
+
+            {/* Status selector */}
+            <div className="shrink-0">
+              <Select
+                value={order.status}
+                onValueChange={(val) =>
+                  onStatusChange(order.id, val as PrasadOrderStatus)
+                }
+                disabled={isUpdating || isFinal}
+              >
+                <SelectTrigger
+                  className="font-body text-xs w-36 h-8 border-border"
+                  data-ocid={`admin.prasad.order.status.select.${index + 1}`}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    value={PrasadOrderStatus.confirmed}
+                    className="font-body text-xs"
+                  >
+                    ✅ Confirmed
+                  </SelectItem>
+                  <SelectItem
+                    value={PrasadOrderStatus.dispatched}
+                    className="font-body text-xs"
+                  >
+                    🚚 Dispatched
+                  </SelectItem>
+                  <SelectItem
+                    value={PrasadOrderStatus.delivered}
+                    className="font-body text-xs"
+                  >
+                    📦 Delivered
+                  </SelectItem>
+                  <SelectItem
+                    value={PrasadOrderStatus.cancelled}
+                    className="font-body text-xs"
+                  >
+                    ❌ Cancelled
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
+function PrasadOrdersTab() {
+  const { data: orders = [], isLoading } = useAllPrasadOrders();
+  const updateStatus = useUpdatePrasadOrderStatus();
+  const [filter, setFilter] = useState<PrasadFilter>("all");
+  const [updatingId, setUpdatingId] = useState<bigint | null>(null);
+
+  const filteredOrders =
+    filter === "all" ? orders : orders.filter((o) => o.status === filter);
+
+  function handleStatusChange(orderId: bigint, status: PrasadOrderStatus) {
+    setUpdatingId(orderId);
+    updateStatus.mutate(
+      { orderId, status },
+      {
+        onSuccess: () => {
+          toast.success("Prasad order status updated");
+          setUpdatingId(null);
+        },
+        onError: () => {
+          toast.error("Failed to update prasad order status");
+          setUpdatingId(null);
+        },
+      },
+    );
+  }
+
+  const filterOptions: { value: PrasadFilter; label: string }[] = [
+    { value: "all", label: "All" },
+    { value: PrasadOrderStatus.confirmed, label: "Confirmed" },
+    { value: PrasadOrderStatus.dispatched, label: "Dispatched" },
+    { value: PrasadOrderStatus.delivered, label: "Delivered" },
+    { value: PrasadOrderStatus.cancelled, label: "Cancelled" },
+  ];
+
+  const stats = [
+    {
+      label: "Total",
+      count: orders.length,
+      color: "bg-saffron/10 text-saffron",
+    },
+    {
+      label: "Confirmed",
+      count: orders.filter((o) => o.status === PrasadOrderStatus.confirmed)
+        .length,
+      color: "bg-blue-100 text-blue-700",
+    },
+    {
+      label: "Dispatched",
+      count: orders.filter((o) => o.status === PrasadOrderStatus.dispatched)
+        .length,
+      color: "bg-purple-100 text-purple-700",
+    },
+    {
+      label: "Delivered",
+      count: orders.filter((o) => o.status === PrasadOrderStatus.delivered)
+        .length,
+      color: "bg-green-100 text-green-700",
+    },
+  ];
+
+  return (
+    <div className="space-y-4">
+      {/* Stats row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            className={`rounded-xl p-3 text-center ${stat.color} border border-current/10`}
+          >
+            <p className="font-display text-2xl font-bold">{stat.count}</p>
+            <p className="font-body text-xs mt-0.5 opacity-80">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Filter bar */}
+      <div
+        className="flex flex-wrap gap-1.5 p-1 bg-cream-dark rounded-xl"
+        data-ocid="admin.prasad.orders.filter.tab"
+      >
+        {filterOptions.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => setFilter(opt.value)}
+            className={`px-3 py-1.5 rounded-lg font-body text-xs font-medium transition-all duration-200 ${
+              filter === opt.value
+                ? "bg-saffron text-white shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-white/60"
+            }`}
+          >
+            {opt.label}
+            {opt.value !== "all" && (
+              <span
+                className={`ml-1.5 rounded-full px-1 text-xs ${
+                  filter === opt.value ? "bg-white/20" : "bg-black/5"
+                }`}
+              >
+                {orders.filter((o) => o.status === opt.value).length}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Orders list */}
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
+        </div>
+      ) : filteredOrders.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex flex-col items-center justify-center py-16 gap-3"
+          data-ocid="admin.prasad.orders.empty_state"
+        >
+          <MapPin className="w-12 h-12 text-muted-foreground/30" />
+          <p className="font-body text-muted-foreground text-sm">
+            No prasad orders found
+          </p>
+        </motion.div>
+      ) : (
+        <AnimatePresence mode="popLayout">
+          <div className="space-y-2">
+            {filteredOrders.map((order, idx) => (
+              <PrasadOrderRow
+                key={order.id.toString()}
+                order={order}
+                index={idx}
+                onStatusChange={handleStatusChange}
+                isUpdating={updatingId === order.id}
+              />
+            ))}
+          </div>
+        </AnimatePresence>
+      )}
+    </div>
+  );
+}
+
 // ─── Admin Guard ──────────────────────────────────────────────────────────────
 
 function AdminAccessDenied() {
@@ -681,7 +993,8 @@ export function AdminPage() {
                 Admin Panel
               </h1>
               <p className="font-body text-sm text-white/70 mt-0.5">
-                Manage orders, pandit availability & product inventory
+                Manage orders, pandit availability, product inventory & prasad
+                orders
               </p>
             </div>
           </motion.div>
@@ -715,6 +1028,14 @@ export function AdminPage() {
             >
               <Package className="w-4 h-4" />
               Products
+            </TabsTrigger>
+            <TabsTrigger
+              value="prasad"
+              className="font-body text-sm data-[state=active]:bg-saffron data-[state=active]:text-white rounded-lg px-5 py-2 flex items-center gap-2"
+              data-ocid="admin.prasad.tab"
+            >
+              <MapPin className="w-4 h-4" />
+              Prasad Orders
             </TabsTrigger>
           </TabsList>
 
@@ -756,6 +1077,20 @@ export function AdminPage() {
               </CardHeader>
               <CardContent className="pt-5">
                 <ProductsTab />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="prasad">
+            <Card className="border-border bg-card/60 backdrop-blur-sm shadow-xs">
+              <CardHeader className="pb-2 border-b border-border">
+                <CardTitle className="font-display text-xl text-foreground flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-saffron" />
+                  Prasad Order Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-5">
+                <PrasadOrdersTab />
               </CardContent>
             </Card>
           </TabsContent>

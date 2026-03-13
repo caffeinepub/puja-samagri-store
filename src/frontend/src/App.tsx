@@ -21,8 +21,10 @@ import { BookPanditPage } from "./pages/BookPanditPage";
 import { CatalogPage } from "./pages/CatalogPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { HomePage } from "./pages/HomePage";
+import { MyDashboardPage } from "./pages/MyDashboardPage";
 import { MyOrdersPage } from "./pages/MyOrdersPage";
 import { OrderConfirmationPage } from "./pages/OrderConfirmationPage";
+import { PrasadBookingPage } from "./pages/PrasadBookingPage";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { SchedulePage } from "./pages/SchedulePage";
 
@@ -155,10 +157,22 @@ const myOrdersRoute = createRoute({
   component: MyOrdersPage,
 });
 
+const myDashboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/my-dashboard",
+  component: MyDashboardPage,
+});
+
 const bookPanditRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/book-pandit",
   component: BookPanditPage,
+});
+
+const prasadRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/prasad",
+  component: PrasadBookingPage,
 });
 
 const adminRoute = createRoute({
@@ -180,7 +194,9 @@ const routeTree = rootRoute.addChildren([
   checkoutRoute,
   orderConfirmationRoute,
   myOrdersRoute,
+  myDashboardRoute,
   bookPanditRoute,
+  prasadRoute,
   adminRoute,
   productDetailRoute,
 ]);

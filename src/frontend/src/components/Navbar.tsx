@@ -49,7 +49,8 @@ export function Navbar() {
     { to: "/catalog", label: "Shop", ocid: "nav.shop.link" },
     { to: "/schedule", label: "Schedule", ocid: "nav.schedule.link" },
     { to: "/book-pandit", label: "Book Pandit", ocid: "nav.bookpandit.link" },
-    { to: "/my-orders", label: "My Orders", ocid: "nav.orders.link" },
+    { to: "/prasad", label: "Prasad", ocid: "nav.prasad.link" },
+    { to: "/my-dashboard", label: "My Dashboard", ocid: "nav.dashboard.link" },
   ];
 
   return (
@@ -175,7 +176,7 @@ export function Navbar() {
                     variant="ghost"
                     size="sm"
                     className="font-body text-sm text-muted-foreground hover:text-saffron"
-                    onClick={() => navigate({ to: "/my-orders" })}
+                    onClick={() => navigate({ to: "/my-dashboard" })}
                   >
                     <User className="w-4 h-4 mr-1" />
                     Account

@@ -4,6 +4,8 @@ import type {
   Order,
   OrderStatus,
   PanditAvailability,
+  PrasadOrder,
+  PrasadOrderStatus,
   Product,
   ProductCategory,
   Review,
@@ -346,6 +348,42 @@ export function useUpdateProductStock() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+}
+
+// ==================== PRASAD ORDERS (ADMIN) ====================
+
+export function useAllPrasadOrders() {
+  const { actor, isFetching } = useActor();
+  const { data: isAdmin } = useIsAdmin();
+  return useQuery<PrasadOrder[]>({
+    queryKey: ["prasadOrders", "all"],
+    queryFn: async () => {
+      if (!actor || !isAdmin) return [];
+      try {
+        return await actor.getAllPrasadOrders();
+      } catch {
+        return [];
+      }
+    },
+    enabled: !isFetching && !!isAdmin,
+  });
+}
+
+export function useUpdatePrasadOrderStatus() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      orderId,
+      status,
+    }: { orderId: bigint; status: PrasadOrderStatus }) => {
+      if (!actor) throw new Error("Not authenticated");
+      await actor.updatePrasadOrderStatus(orderId, status);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["prasadOrders"] });
     },
   });
 }

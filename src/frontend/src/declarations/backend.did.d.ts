@@ -30,6 +30,26 @@ export interface PanditAvailability {
   'available' : boolean,
   'panditId' : string,
 }
+export interface PrasadOrder {
+  'id' : bigint,
+  'status' : PrasadOrderStatus,
+  'deliveryAddress' : string,
+  'userId' : Principal,
+  'createdAt' : bigint,
+  'instructions' : string,
+  'templeName' : string,
+  'pricePerBox' : bigint,
+  'quantity' : bigint,
+  'templeId' : bigint,
+  'contactNumber' : string,
+  'prasadItemName' : string,
+  'totalPrice' : bigint,
+}
+export type PrasadOrderStatus = { 'cancelled' : null } |
+  { 'pending' : null } |
+  { 'dispatched' : null } |
+  { 'delivered' : null } |
+  { 'confirmed' : null };
 export interface Product {
   'id' : bigint,
   'inStock' : boolean,
@@ -65,15 +85,22 @@ export interface _SERVICE {
   'addReview' : ActorMethod<[bigint, bigint, string], undefined>,
   'addToCart' : ActorMethod<[bigint, bigint], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'bookPrasad' : ActorMethod<
+    [bigint, string, string, bigint, bigint, string, string, string],
+    undefined
+  >,
+  'cancelPrasadOrder' : ActorMethod<[bigint], undefined>,
   'clearCart' : ActorMethod<[], undefined>,
   'ensureCallerIsUser' : ActorMethod<[], undefined>,
   'getAllOrders' : ActorMethod<[], Array<Order>>,
+  'getAllPrasadOrders' : ActorMethod<[], Array<PrasadOrder>>,
   'getAllProducts' : ActorMethod<[], Array<Product>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCart' : ActorMethod<[], Array<CartItem>>,
   'getMyOrders' : ActorMethod<[], Array<Order>>,
   'getPanditAvailabilities' : ActorMethod<[], Array<PanditAvailability>>,
+  'getPrasadOrders' : ActorMethod<[], Array<PrasadOrder>>,
   'getProductReviews' : ActorMethod<[bigint], Array<Review>>,
   'getProductsByCategory' : ActorMethod<[ProductCategory], Array<Product>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
@@ -84,6 +111,10 @@ export interface _SERVICE {
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'setPanditAvailability' : ActorMethod<[string, boolean], undefined>,
   'updateOrderStatus' : ActorMethod<[bigint, OrderStatus], undefined>,
+  'updatePrasadOrderStatus' : ActorMethod<
+    [bigint, PrasadOrderStatus],
+    undefined
+  >,
   'updateProduct' : ActorMethod<
     [
       bigint,

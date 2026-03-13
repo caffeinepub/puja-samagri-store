@@ -699,6 +699,65 @@ export function HomePage() {
         </motion.div>
       </section>
 
+      {/* ==================== PRASAD BOOKING PROMO ==================== */}
+      <section className="py-8 sm:py-10">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="rounded-2xl overflow-hidden relative"
+            style={{
+              background:
+                "linear-gradient(135deg, oklch(0.42 0.14 38) 0%, oklch(0.55 0.18 55) 50%, oklch(0.68 0.22 82) 100%)",
+            }}
+          >
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)",
+                backgroundSize: "30px 30px",
+              }}
+            />
+            <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6 p-7 sm:p-10">
+              <div className="text-center sm:text-left">
+                <div className="flex items-center gap-2 justify-center sm:justify-start mb-3">
+                  <span className="text-2xl">🪤</span>
+                  <span
+                    className="font-body text-xs font-semibold uppercase tracking-widest"
+                    style={{ color: "oklch(1 0 0 / 0.7)" }}
+                  >
+                    Sacred Prasad Delivery
+                  </span>
+                </div>
+                <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-2 leading-snug">
+                  Get Prasad from 10 Sacred Temples
+                </h2>
+                <p
+                  className="font-body text-sm"
+                  style={{ color: "oklch(1 0 0 / 0.75)" }}
+                >
+                  Shirdi, Ayodhya, Tirupati, Vaishno Devi &amp; more — delivered
+                  to your door.
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                <button
+                  type="button"
+                  className="font-body font-bold text-sm px-6 py-3 rounded-xl shadow-warm hover:shadow-elevated transition-all duration-200 hover:-translate-y-0.5"
+                  style={{ background: "white", color: "oklch(0.42 0.14 22)" }}
+                  onClick={() => navigate({ to: "/prasad" })}
+                  data-ocid="home.prasad.primary_button"
+                >
+                  🙏 Book Prasad
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
       {/* ==================== SHOP BY OCCASION ==================== */}
       <section className="devotional-section py-14">
         <div className="container mx-auto px-4">
