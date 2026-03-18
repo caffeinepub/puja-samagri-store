@@ -32,17 +32,13 @@ export function Footer() {
           {/* Column 1 — Brand */}
           <div>
             <div className="flex items-center gap-2.5 mb-3">
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-white text-base font-bold flex-shrink-0"
-                style={{
-                  background:
-                    "linear-gradient(135deg, oklch(0.68 0.22 45), oklch(0.28 0.13 16))",
-                }}
-              >
-                ॐ
-              </div>
+              <img
+                src="/assets/generated/shankh-logo-transparent.dim_200x200.png"
+                alt="Samudraj Shankh Logo"
+                className="w-10 h-10 object-contain flex-shrink-0"
+              />
               <span className="font-display text-2xl font-bold text-white leading-none">
-                Puja Samagri
+                Samudraj
               </span>
             </div>
             <p className="font-body text-sm text-white/60 mt-2 max-w-[220px] leading-relaxed">
@@ -123,7 +119,7 @@ export function Footer() {
             className="font-body text-xs"
             style={{ color: "oklch(1 0 0 / 0.38)" }}
           >
-            © {year} Puja Samagri. All rights reserved.
+            © {year} Samudraj. All rights reserved.
           </p>
           <p
             className="font-body text-xs flex items-center gap-1.5"

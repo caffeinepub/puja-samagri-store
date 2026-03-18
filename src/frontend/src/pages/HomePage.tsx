@@ -218,7 +218,7 @@ export function HomePage() {
                 </motion.div>
 
                 <h1 className="font-display text-5xl sm:text-6xl font-bold text-white leading-tight mb-5 drop-shadow-lg">
-                  Sacred Puja Samagri,
+                  Sacred Samudraj,
                   <br />
                   <span className="gold-text">Delivered Fresh Daily</span>
                 </h1>

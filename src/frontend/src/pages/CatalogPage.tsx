@@ -394,7 +394,7 @@ export function CatalogPage() {
         <div className="container mx-auto px-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 relative">
           <div>
             <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-2">
-              Puja Samagri
+              Samudraj
             </h1>
             <p className="font-body text-muted-foreground text-sm">
               Fresh flowers, sacred essentials & ritual kits for your daily

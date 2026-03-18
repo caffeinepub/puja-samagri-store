@@ -90,11 +90,15 @@ export function Navbar() {
 
       {/* Main header */}
       <header
-        className={`w-full bg-card/97 backdrop-blur-md transition-all duration-300 ${
+        className={`w-full backdrop-blur-md transition-all duration-300 ${
           scrolled
-            ? "border-b-2 border-saffron/20 shadow-warm"
-            : "border-b border-border"
+            ? "shadow-[0_4px_20px_rgba(0,0,0,0.3)] border-b-2 border-amber-500/30"
+            : "border-b border-white/10"
         }`}
+        style={{
+          background:
+            "linear-gradient(135deg, oklch(0.22 0.10 16) 0%, oklch(0.30 0.12 22) 100%)",
+        }}
       >
         <div className="container mx-auto px-4">
           <nav className="flex items-center justify-between py-4">
@@ -104,17 +108,13 @@ export function Navbar() {
               className="flex items-center gap-2.5 hover:opacity-85 transition-opacity"
               data-ocid="nav.home.link"
             >
-              <div
-                className="w-9 h-9 rounded-full flex items-center justify-center text-white text-base font-bold flex-shrink-0"
-                style={{
-                  background:
-                    "linear-gradient(135deg, oklch(0.68 0.22 45), oklch(0.28 0.13 16))",
-                }}
-              >
-                ॐ
-              </div>
-              <span className="font-display text-xl font-bold text-gradient-saffron leading-none">
-                Puja Samagri
+              <img
+                src="/assets/generated/shankh-logo-transparent.dim_200x200.png"
+                alt="Samudraj Shankh Logo"
+                className="w-12 h-12 object-contain flex-shrink-0"
+              />
+              <span className="font-display text-2xl font-bold text-gradient-saffron leading-none">
+                Samudraj
               </span>
             </Link>
 
@@ -124,24 +124,24 @@ export function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="px-4 py-2 font-body text-sm font-medium text-foreground/75 hover:text-saffron transition-all relative group"
+                  className="px-4 py-2 font-body text-sm font-medium text-white/80 hover:text-amber-300 transition-all relative group"
                   data-ocid={link.ocid}
-                  activeProps={{ className: "text-saffron font-semibold" }}
+                  activeProps={{ className: "text-amber-300 font-semibold" }}
                 >
                   {link.label}
-                  <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-saffron scale-x-0 group-hover:scale-x-100 transition-transform duration-200 rounded-full" />
+                  <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-amber-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-200 rounded-full" />
                 </Link>
               ))}
               {isAdmin && (
                 <Link
                   to="/admin"
-                  className="px-4 py-2 font-body text-sm font-medium text-maroon hover:text-maroon transition-all flex items-center gap-1.5 relative group"
+                  className="px-4 py-2 font-body text-sm font-medium text-amber-300 hover:text-amber-200 transition-all flex items-center gap-1.5 relative group"
                   data-ocid="nav.admin.link"
                   activeProps={{ className: "font-semibold" }}
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
                   Admin
-                  <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-maroon scale-x-0 group-hover:scale-x-100 transition-transform duration-200 rounded-full" />
+                  <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-amber-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-200 rounded-full" />
                 </Link>
               )}
             </div>
@@ -152,7 +152,7 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`relative hover:bg-saffron/10 hover:text-saffron transition-all ${cartCount > 0 ? "animate-pulse-glow" : ""}`}
+                className={`relative text-white/80 hover:bg-amber-500/20 hover:text-amber-300 transition-all ${cartCount > 0 ? "animate-pulse-glow" : ""}`}
                 onClick={openCart}
                 data-ocid="nav.cart.button"
               >
@@ -179,7 +179,7 @@ export function Navbar() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="font-body text-sm text-muted-foreground hover:text-saffron"
+                    className="font-body text-sm text-white/70 hover:text-amber-300 hover:bg-amber-500/10"
                     onClick={() => navigate({ to: "/my-dashboard" })}
                   >
                     <User className="w-4 h-4 mr-1" />
@@ -188,7 +188,7 @@ export function Navbar() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="font-body text-sm border-maroon/30 text-maroon hover:bg-maroon hover:text-white transition-all"
+                    className="font-body text-sm border-amber-500/40 text-amber-300 hover:bg-amber-500/20 hover:text-amber-200 hover:border-amber-400/60 transition-all bg-transparent"
                     onClick={() => clear()}
                   >
                     <LogOut className="w-4 h-4 mr-1" />
@@ -238,7 +238,7 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden hover:bg-saffron/10"
+                className="md:hidden text-white/80 hover:bg-amber-500/20 hover:text-amber-300"
                 onClick={() => setMobileOpen(!mobileOpen)}
                 data-ocid="nav.mobile_menu.toggle"
               >
@@ -260,17 +260,21 @@ export function Navbar() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.25 }}
-              className="md:hidden border-t border-border bg-card"
+              className="md:hidden border-t border-white/10"
+              style={{
+                background:
+                  "linear-gradient(180deg, oklch(0.25 0.11 16) 0%, oklch(0.20 0.09 16) 100%)",
+              }}
             >
               <div className="container mx-auto px-4 py-3 flex flex-col gap-0.5">
                 {navLinks.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
-                    className="px-4 py-3 rounded-lg font-body text-sm font-medium text-foreground/80 hover:text-saffron hover:bg-saffron/5 transition-all"
+                    className="px-4 py-3 rounded-lg font-body text-sm font-medium text-white/80 hover:text-amber-300 hover:bg-amber-500/10 transition-all"
                     data-ocid={link.ocid}
                     activeProps={{
-                      className: "text-saffron bg-saffron/5 font-semibold",
+                      className: "text-amber-300 bg-amber-500/10 font-semibold",
                     }}
                     onClick={() => setMobileOpen(false)}
                   >
@@ -280,7 +284,7 @@ export function Navbar() {
                 {isAdmin && (
                   <Link
                     to="/admin"
-                    className="px-4 py-3 rounded-lg font-body text-sm font-medium text-maroon hover:bg-maroon/5 transition-all flex items-center gap-2"
+                    className="px-4 py-3 rounded-lg font-body text-sm font-medium text-amber-300 hover:bg-amber-500/10 transition-all flex items-center gap-2"
                     data-ocid="nav.admin.link"
                     onClick={() => setMobileOpen(false)}
                   >
@@ -288,12 +292,12 @@ export function Navbar() {
                     Admin
                   </Link>
                 )}
-                <div className="pt-2 border-t border-border mt-1">
+                <div className="pt-2 border-t border-white/10 mt-1">
                   {identity ? (
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full border-maroon/30 text-maroon hover:bg-maroon hover:text-white font-body"
+                      className="w-full border-amber-500/40 text-amber-300 hover:bg-amber-500/20 hover:text-amber-200 bg-transparent font-body"
                       onClick={() => {
                         clear();
                         setMobileOpen(false);
