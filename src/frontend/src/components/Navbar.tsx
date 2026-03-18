@@ -64,6 +64,10 @@ export function Navbar() {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="announcement-bar overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(90deg, oklch(0.28 0.13 16) 0%, oklch(0.42 0.14 38) 50%, oklch(0.28 0.13 16) 100%)",
+            }}
           >
             <div className="container mx-auto px-4 py-2 flex items-center justify-center relative">
               <p className="font-body text-xs sm:text-sm text-white font-medium tracking-wide text-center pr-8">

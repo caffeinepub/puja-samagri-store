@@ -1,0 +1,136 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Bricolage+Grotesque:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0.975 0.014 72;
+    --foreground: 0.22 0.07 22;
+
+    --card: 1 0 0;
+    --card-foreground: 0.22 0.07 22;
+
+    --popover: 1 0 0;
+    --popover-foreground: 0.22 0.07 22;
+
+    --primary: 0.52 0.18 38;
+    --primary-foreground: 1 0 0;
+
+    --secondary: 0.94 0.04 68;
+    --secondary-foreground: 0.28 0.13 16;
+
+    --muted: 0.94 0.03 60;
+    --muted-foreground: 0.55 0.06 45;
+
+    --accent: 0.68 0.22 45;
+    --accent-foreground: 1 0 0;
+
+    --destructive: 0.55 0.22 22;
+    --destructive-foreground: 1 0 0;
+
+    --border: 0.88 0.06 60;
+    --input: 0.88 0.06 60;
+    --ring: 0.52 0.18 38;
+
+    --radius: 0.75rem;
+
+    --chart-1: 0.52 0.18 38;
+    --chart-2: 0.68 0.22 45;
+    --chart-3: 0.84 0.16 84;
+    --chart-4: 0.48 0.14 270;
+    --chart-5: 0.5 0.18 200;
+
+    --sidebar: 0.975 0.014 72;
+    --sidebar-foreground: 0.22 0.07 22;
+    --sidebar-primary: 0.52 0.18 38;
+    --sidebar-primary-foreground: 1 0 0;
+    --sidebar-accent: 0.94 0.04 68;
+    --sidebar-accent-foreground: 0.28 0.13 16;
+    --sidebar-border: 0.88 0.06 60;
+    --sidebar-ring: 0.52 0.18 38;
+  }
+
+  .dark {
+    --background: 0.15 0.05 22;
+    --foreground: 0.97 0.01 72;
+
+    --card: 0.2 0.06 22;
+    --card-foreground: 0.97 0.01 72;
+
+    --popover: 0.2 0.06 22;
+    --popover-foreground: 0.97 0.01 72;
+
+    --primary: 0.68 0.22 45;
+    --primary-foreground: 0.15 0.05 22;
+
+    --secondary: 0.28 0.08 22;
+    --secondary-foreground: 0.97 0.01 72;
+
+    --muted: 0.25 0.06 22;
+    --muted-foreground: 0.65 0.06 55;
+
+    --accent: 0.68 0.22 45;
+    --accent-foreground: 0.15 0.05 22;
+
+    --destructive: 0.55 0.22 22;
+    --destructive-foreground: 1 0 0;
+
+    --border: 0.32 0.08 22;
+    --input: 0.32 0.08 22;
+    --ring: 0.68 0.22 45;
+
+    --sidebar: 0.18 0.06 22;
+    --sidebar-foreground: 0.97 0.01 72;
+    --sidebar-primary: 0.68 0.22 45;
+    --sidebar-primary-foreground: 0.15 0.05 22;
+    --sidebar-accent: 0.28 0.08 22;
+    --sidebar-accent-foreground: 0.97 0.01 72;
+    --sidebar-border: 0.32 0.08 22;
+    --sidebar-ring: 0.68 0.22 45;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Fraunces", Georgia, serif;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: "Fraunces", Georgia, serif;
+  }
+  .font-body {
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  }
+  .font-accent {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .maroon-section {
+    background: linear-gradient(
+      135deg,
+      oklch(0.28 0.13 16) 0%,
+      oklch(0.22 0.1 16) 45%,
+      oklch(0.52 0.21 38) 100%
+    );
+  }
+}

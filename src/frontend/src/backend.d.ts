@@ -119,4 +119,6 @@ export interface backendInterface {
     updateOrderStatus(orderId: bigint, status: OrderStatus): Promise<void>;
     updatePrasadOrderStatus(orderId: bigint, status: PrasadOrderStatus): Promise<void>;
     updateProduct(id: bigint, name: string, category: ProductCategory, description: string, price: bigint, unit: string, inStock: boolean, occasionTag: string | null): Promise<void>;
+    claimFirstAdmin(): Promise<void>;
+    isAdminAssigned(): Promise<boolean>;
 }

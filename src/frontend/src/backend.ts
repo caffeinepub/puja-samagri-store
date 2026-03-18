@@ -202,6 +202,8 @@ export interface backendInterface {
     updateOrderStatus(orderId: bigint, status: OrderStatus): Promise<void>;
     updatePrasadOrderStatus(orderId: bigint, status: PrasadOrderStatus): Promise<void>;
     updateProduct(id: bigint, name: string, category: ProductCategory, description: string, price: bigint, unit: string, inStock: boolean, occasionTag: string | null): Promise<void>;
+    claimFirstAdmin(): Promise<void>;
+    isAdminAssigned(): Promise<boolean>;
 }
 import type { Order as _Order, OrderItem as _OrderItem, OrderStatus as _OrderStatus, PrasadOrder as _PrasadOrder, PrasadOrderStatus as _PrasadOrderStatus, Product as _Product, ProductCategory as _ProductCategory, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -623,6 +625,34 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.updateProduct(arg0, arg1, to_candid_ProductCategory_n1(this._uploadFile, this._downloadFile, arg2), arg3, arg4, arg5, arg6, to_candid_opt_n3(this._uploadFile, this._downloadFile, arg7));
+            return result;
+        }
+    }
+    async claimFirstAdmin(): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.claimFirstAdmin();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.claimFirstAdmin();
+            return result;
+        }
+    }
+    async isAdminAssigned(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.isAdminAssigned();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.isAdminAssigned();
             return result;
         }
     }

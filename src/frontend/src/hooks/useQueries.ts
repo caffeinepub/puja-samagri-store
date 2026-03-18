@@ -387,3 +387,34 @@ export function useUpdatePrasadOrderStatus() {
     },
   });
 }
+
+export function useIsAdminAssigned() {
+  const { actor } = useActor();
+  return useQuery<boolean>({
+    queryKey: ["isAdminAssigned"],
+    queryFn: async () => {
+      if (!actor) return true;
+      try {
+        return await actor.isAdminAssigned();
+      } catch {
+        return true;
+      }
+    },
+    staleTime: 30 * 1000,
+  });
+}
+
+export function useClaimFirstAdmin() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      if (!actor) throw new Error("Not authenticated");
+      await actor.claimFirstAdmin();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
+      queryClient.invalidateQueries({ queryKey: ["isAdminAssigned"] });
+    },
+  });
+}

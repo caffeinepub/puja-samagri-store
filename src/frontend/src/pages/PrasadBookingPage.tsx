@@ -65,8 +65,7 @@ const TEMPLES: Temple[] = [
       "One of the most visited pilgrimage sites in India, drawing millions of devotees seeking blessings of Sai Baba.",
     famousFor: "Sai Baba Laddoo & Pedha",
     emoji: "🕌",
-    image:
-      "https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=600&auto=format&fit=crop&q=80",
+    image: "/assets/generated/temple-shirdi.dim_800x500.jpg",
     prasadItems: [
       { name: "Sai Baba Laddoo", price: 151 },
       { name: "Sai Pedha", price: 121 },
@@ -83,8 +82,7 @@ const TEMPLES: Temple[] = [
       "The grand Ram Mandir at the birthplace of Lord Ram, consecrated in 2024, stands as a symbol of devotion and faith.",
     famousFor: "Ram Lalla Laddoo & Peda",
     emoji: "🏯",
-    image:
-      "https://images.unsplash.com/photo-1567603452239-7a1bb3f3f83a?w=600&auto=format&fit=crop&q=80",
+    image: "/assets/generated/temple-ayodhya.dim_800x500.jpg",
     prasadItems: [
       { name: "Ram Lalla Laddoo", price: 201 },
       { name: "Ram Peda", price: 151 },
@@ -101,8 +99,7 @@ const TEMPLES: Temple[] = [
       "The Siddhivinayak Temple is one of the most revered Ganesha temples, granting wishes and bringing prosperity.",
     famousFor: "Modak & Besan Laddoo",
     emoji: "🐘",
-    image:
-      "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=600&auto=format&fit=crop&q=80",
+    image: "/assets/generated/temple-siddhivinayak.dim_800x500.jpg",
     prasadItems: [
       { name: "Modak", price: 151 },
       { name: "Besan Laddoo", price: 121 },
@@ -119,8 +116,7 @@ const TEMPLES: Temple[] = [
       "Nestled in the Trikuta mountains, Vaishno Devi is one of the holiest Hindu pilgrimages, attracting crores of devotees.",
     famousFor: "Charnamrit & Panchamrit Prasad",
     emoji: "⛰️",
-    image:
-      "https://images.unsplash.com/photo-1598977054077-c297d7e0e0c5?w=600&auto=format&fit=crop&q=80",
+    image: "/assets/generated/temple-vaishnodevi.dim_800x500.jpg",
     prasadItems: [
       { name: "Charnamrit Prasad", price: 251 },
       { name: "Panchamrit", price: 201 },
@@ -137,8 +133,7 @@ const TEMPLES: Temple[] = [
       "The richest temple in the world by donations, Tirupati Balaji draws 50,000–100,000 pilgrims every day.",
     famousFor: "Famous Tirupati Laddoo (GI tagged)",
     emoji: "🏔️",
-    image:
-      "https://images.unsplash.com/photo-1596467745552-9e48e8bb73b2?w=600&auto=format&fit=crop&q=80",
+    image: "/assets/generated/temple-tirupati.dim_800x500.jpg",
     prasadItems: [{ name: "Tirupati Laddoo", price: 251 }],
     color: "oklch(0.50 0.16 65)",
   },
@@ -152,8 +147,7 @@ const TEMPLES: Temple[] = [
       "The birthplace of Lord Krishna, Mathura and Vrindavan are eternal pilgrimage towns with hundreds of temples.",
     famousFor: "Mathura Pedha & Chappan Bhog",
     emoji: "🪈",
-    image:
-      "https://images.unsplash.com/photo-1609000789060-7ef4c2a3f2fe?w=600&auto=format&fit=crop&q=80",
+    image: "/assets/generated/temple-mathura.dim_800x500.jpg",
     prasadItems: [
       { name: "Mathura Pedha", price: 101 },
       { name: "Chappan Bhog Prasad", price: 201 },
@@ -170,8 +164,7 @@ const TEMPLES: Temple[] = [
       "One of the twelve Jyotirlingas, the Kashi Vishwanath temple on the banks of the Ganga is eternally sacred to Shiva devotees.",
     famousFor: "Bhasma Prasad & Panchamrit",
     emoji: "🔱",
-    image:
-      "https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=600&auto=format&fit=crop&q=80",
+    image: "/assets/generated/temple-kashi.dim_800x500.jpg",
     prasadItems: [
       { name: "Bhasma Prasad", price: 151 },
       { name: "Panchamrit", price: 121 },
@@ -188,8 +181,7 @@ const TEMPLES: Temple[] = [
       "The Mahakaleshwar Jyotirlinga in Ujjain is unique as the only south-facing Jyotirlinga, renowned for the Bhasma Aarti.",
     famousFor: "Bhasma Prasad & Laddoo",
     emoji: "🕉️",
-    image:
-      "https://images.unsplash.com/photo-1526515579900-98518e3a93b1?w=600&auto=format&fit=crop&q=80",
+    image: "/assets/generated/temple-mahakaleshwar.dim_800x500.jpg",
     prasadItems: [
       { name: "Bhasma Prasad", price: 151 },
       { name: "Laddoo", price: 121 },
@@ -206,8 +198,7 @@ const TEMPLES: Temple[] = [
       "Lord Jagannath's Mahaprasad is considered so sacred it is cooked in the world's largest kitchen and blessed by the deity himself.",
     famousFor: "Mahaprasad & Khichdi Prasad",
     emoji: "🌊",
-    image:
-      "https://images.unsplash.com/photo-1601961405399-9404c84b0cad?w=600&auto=format&fit=crop&q=80",
+    image: "/assets/generated/temple-jagannath.dim_800x500.jpg",
     prasadItems: [
       { name: "Mahaprasad", price: 201 },
       { name: "Khichdi Prasad", price: 151 },
@@ -224,8 +215,7 @@ const TEMPLES: Temple[] = [
       "The Harmandir Sahib (Golden Temple) is the holiest Sikh shrine; its langar serves free meals to 100,000+ people daily.",
     famousFor: "Kada Prasad & Langar Prasad",
     emoji: "✨",
-    image:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&auto=format&fit=crop&q=80",
+    image: "/assets/generated/temple-golden.dim_800x500.jpg",
     prasadItems: [
       { name: "Kada Prasad", price: 101 },
       { name: "Langar Prasad", price: 151 },
@@ -494,8 +484,21 @@ export function PrasadBookingPage() {
                           alt={temple.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).style.display =
-                              "none";
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
+                            const parent = target.parentElement;
+                            if (
+                              parent &&
+                              !parent.querySelector(".fallback-emoji")
+                            ) {
+                              const fallback = document.createElement("div");
+                              fallback.className =
+                                "fallback-emoji w-full h-full flex items-center justify-center text-6xl absolute inset-0";
+                              fallback.style.background =
+                                "linear-gradient(135deg, oklch(0.35 0.12 22), oklch(0.28 0.13 16))";
+                              fallback.textContent = temple.emoji;
+                              parent.appendChild(fallback);
+                            }
                           }}
                         />
                         <div

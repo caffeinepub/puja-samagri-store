@@ -458,4 +458,21 @@ actor {
       case (?_) { () };
     };
   };
+
+  // First-run admin claim: works only if no admin has been assigned yet
+  public shared ({ caller }) func claimFirstAdmin() : async () {
+    if (caller.isAnonymous()) {
+      Runtime.trap("Anonymous users cannot claim admin. Please login first.");
+    };
+    if (accessControlState.adminAssigned) {
+      Runtime.trap("An admin has already been assigned.");
+    };
+    accessControlState.userRoles.add(caller, #admin);
+    accessControlState.adminAssigned := true;
+  };
+
+  // Check if any admin has been assigned yet
+  public query func isAdminAssigned() : async Bool {
+    accessControlState.adminAssigned;
+  };
 };

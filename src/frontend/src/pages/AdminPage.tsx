@@ -23,7 +23,7 @@ import {
   Users,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   type Order,
@@ -33,11 +33,14 @@ import {
   type Product,
 } from "../backend.d";
 import { PANDITS } from "../data/pandits";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
   useAllOrders,
   useAllPrasadOrders,
   useAllProducts,
+  useClaimFirstAdmin,
   useIsAdmin,
+  useIsAdminAssigned,
   usePanditAvailabilities,
   useSetPanditAvailability,
   useUpdateOrderStatus,
@@ -913,6 +916,114 @@ function PrasadOrdersTab() {
 // ─── Admin Guard ──────────────────────────────────────────────────────────────
 
 function AdminAccessDenied() {
+  const { identity } = useInternetIdentity();
+  const { data: isAdminAssigned, isLoading: assignedLoading } =
+    useIsAdminAssigned();
+  const claimAdmin = useClaimFirstAdmin();
+  const [claimed, setClaimed] = useState(false);
+
+  useEffect(() => {
+    if (claimAdmin.isSuccess && !claimed) {
+      setClaimed(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    }
+  }, [claimAdmin.isSuccess, claimed]);
+
+  const isLoggedIn = !!identity;
+  const canClaim = isLoggedIn && isAdminAssigned === false;
+
+  if (assignedLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{
+            repeat: Number.POSITIVE_INFINITY,
+            duration: 1,
+            ease: "linear",
+          }}
+        >
+          <RefreshCw className="w-8 h-8 text-saffron" />
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (canClaim) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <Card
+            className="max-w-sm w-full border-saffron/30 bg-gradient-to-br from-amber-50/80 to-orange-50/60 text-center shadow-warm"
+            data-ocid="admin.claim.card"
+          >
+            <CardContent className="pt-10 pb-8 px-8">
+              <div className="w-16 h-16 rounded-full bg-saffron/15 border border-saffron/30 flex items-center justify-center mx-auto mb-5">
+                <ShieldCheck className="w-7 h-7 text-saffron" />
+              </div>
+              <h2 className="font-display text-xl font-bold text-foreground mb-2">
+                No Admin Assigned Yet
+              </h2>
+              <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
+                This app has no admin yet. As the first user, you can claim
+                admin access to manage this store.
+              </p>
+              {claimed ? (
+                <div
+                  className="flex items-center justify-center gap-2 text-green-700 font-semibold"
+                  data-ocid="admin.claim.success_state"
+                >
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>You are now admin! Redirecting...</span>
+                </div>
+              ) : (
+                <Button
+                  onClick={() => claimAdmin.mutate()}
+                  disabled={claimAdmin.isPending}
+                  className="w-full bg-saffron hover:bg-saffron/90 text-white font-semibold py-2.5"
+                  data-ocid="admin.claim.primary_button"
+                >
+                  {claimAdmin.isPending ? (
+                    <span className="flex items-center gap-2">
+                      <motion.span
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          repeat: Number.POSITIVE_INFINITY,
+                          duration: 0.8,
+                          ease: "linear",
+                        }}
+                        className="inline-block"
+                      >
+                        <RefreshCw className="w-4 h-4" />
+                      </motion.span>
+                      Claiming...
+                    </span>
+                  ) : (
+                    "Claim Admin Access"
+                  )}
+                </Button>
+              )}
+              {claimAdmin.isError && (
+                <p
+                  className="mt-3 text-sm text-red-600"
+                  data-ocid="admin.claim.error_state"
+                >
+                  Failed to claim admin. Please try again.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <motion.div
