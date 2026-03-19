@@ -5,28 +5,35 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  useRouterState,
 } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { CartDrawer } from "./components/CartDrawer";
 import { Footer } from "./components/Footer";
 import { Navbar } from "./components/Navbar";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { SplashScreen } from "./components/SplashScreen";
 import { CartDrawerProvider } from "./context/CartContext";
 import { useEnsureUserRole } from "./hooks/useEnsureUserRole";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
+import { AboutPage } from "./pages/AboutPage";
 import { AdminPage } from "./pages/AdminPage";
 import { BookPanditPage } from "./pages/BookPanditPage";
 import { CatalogPage } from "./pages/CatalogPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
+import { ContactPage } from "./pages/ContactPage";
 import { HomePage } from "./pages/HomePage";
 import { MyDashboardPage } from "./pages/MyDashboardPage";
 import { MyOrdersPage } from "./pages/MyOrdersPage";
 import { OrderConfirmationPage } from "./pages/OrderConfirmationPage";
 import { PrasadBookingPage } from "./pages/PrasadBookingPage";
+import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
+import { ReturnPolicyPage } from "./pages/ReturnPolicyPage";
 import { SchedulePage } from "./pages/SchedulePage";
+import { ShippingPolicyPage } from "./pages/ShippingPolicyPage";
 
 // Floating "Logging In" status banner
 function LoginStatusBanner() {
@@ -36,7 +43,7 @@ function LoginStatusBanner() {
   useEffect(() => {
     if (isLoggingIn) {
       toastIdRef.current = toast.loading(
-        "Opening Internet Identity… Complete login in the new tab",
+        "Opening Internet Identity\u2026 Complete login in the new tab",
         {
           duration: Number.POSITIVE_INFINITY,
           description: "Return to this page after completing login.",
@@ -81,8 +88,8 @@ function LoginStatusBanner() {
           >
             <span className="inline-flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
-              Opening Internet Identity in a new tab — please complete login
-              there
+              Opening Internet Identity in a new tab \u2014 please complete
+              login there
               <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
             </span>
           </div>
@@ -92,6 +99,16 @@ function LoginStatusBanner() {
   );
 }
 
+// Scroll to top whenever the route pathname changes
+function RouteScrollReset() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname is the intended trigger
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname]);
+  return null;
+}
+
 // Root layout — also ensures logged-in users get #user role automatically
 function RootLayout() {
   useEnsureUserRole();
@@ -99,6 +116,7 @@ function RootLayout() {
     <CartDrawerProvider>
       <div className="min-h-screen flex flex-col bg-background">
         <LoginStatusBanner />
+        <RouteScrollReset />
         <Navbar />
         <main className="flex-1">
           <Outlet />
@@ -187,6 +205,36 @@ const productDetailRoute = createRoute({
   component: ProductDetailPage,
 });
 
+const aboutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/about",
+  component: AboutPage,
+});
+
+const contactRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/contact",
+  component: ContactPage,
+});
+
+const returnPolicyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/return-policy",
+  component: ReturnPolicyPage,
+});
+
+const privacyPolicyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/privacy-policy",
+  component: PrivacyPolicyPage,
+});
+
+const shippingPolicyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/shipping-policy",
+  component: ShippingPolicyPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   catalogRoute,
@@ -199,9 +247,14 @@ const routeTree = rootRoute.addChildren([
   prasadRoute,
   adminRoute,
   productDetailRoute,
+  aboutRoute,
+  contactRoute,
+  returnPolicyRoute,
+  privacyPolicyRoute,
+  shippingPolicyRoute,
 ]);
 
-const router = createRouter({ routeTree });
+const router = createRouter({ routeTree, scrollRestoration: false });
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -210,5 +263,12 @@ declare module "@tanstack/react-router" {
 }
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  const [showSplash, setShowSplash] = useState(true);
+
+  return (
+    <>
+      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+      <RouterProvider router={router} />
+    </>
+  );
 }

@@ -113,7 +113,10 @@ export function Navbar() {
                 alt="Samudraj Shankh Logo"
                 className="w-12 h-12 object-contain flex-shrink-0"
               />
-              <span className="font-display text-2xl font-bold text-gradient-saffron leading-none">
+              <span
+                className="font-display text-2xl font-bold leading-none"
+                style={{ color: "oklch(0.88 0.18 82)" }}
+              >
                 Samudraj
               </span>
             </Link>

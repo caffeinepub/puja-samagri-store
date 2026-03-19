@@ -6,7 +6,8 @@ const QUICK_LINKS = [
   { to: "/catalog", label: "Shop" },
   { to: "/schedule", label: "Daily Schedule" },
   { to: "/book-pandit", label: "Book a Pandit" },
-  { to: "/my-orders", label: "My Orders" },
+  { to: "/prasad", label: "Prasad Booking" },
+  { to: "/my-dashboard", label: "My Dashboard" },
 ];
 
 const SERVICES = [
@@ -16,6 +17,14 @@ const SERVICES = [
   "Occasion Packages",
   "Pandit Booking",
   "Prasad Booking",
+];
+
+const POLICY_LINKS = [
+  { to: "/about", label: "About Us" },
+  { to: "/contact", label: "Contact Us" },
+  { to: "/return-policy", label: "Return & Refund Policy" },
+  { to: "/privacy-policy", label: "Privacy Policy" },
+  { to: "/shipping-policy", label: "Shipping Policy" },
 ];
 
 export function Footer() {
@@ -28,7 +37,7 @@ export function Footer() {
       style={{ borderTop: "4px solid oklch(0.68 0.22 45)" }}
     >
       <div className="container mx-auto px-4 py-14">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
           {/* Column 1 — Brand */}
           <div>
             <div className="flex items-center gap-2.5 mb-3">
@@ -104,6 +113,37 @@ export function Footer() {
                   >
                     {service}
                   </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 4 — Info & Policies */}
+          <div>
+            <h4
+              className="font-accent font-bold text-xs uppercase tracking-wider mb-5"
+              style={{ color: "oklch(0.88 0.18 82)" }}
+            >
+              Info &amp; Policies
+            </h4>
+            <ul className="space-y-2.5">
+              {POLICY_LINKS.map((link) => (
+                <li key={link.to}>
+                  <Link
+                    to={link.to}
+                    className="font-body text-sm block transition-colors duration-200"
+                    style={{ color: "oklch(1 0 0 / 0.6)" }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.color =
+                        "oklch(0.88 0.18 82)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.color =
+                        "oklch(1 0 0 / 0.6)";
+                    }}
+                  >
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>

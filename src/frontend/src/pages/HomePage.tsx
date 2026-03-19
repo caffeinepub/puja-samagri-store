@@ -7,8 +7,6 @@ import {
   BookOpen,
   Calendar,
   CheckCircle,
-  Clock,
-  Leaf,
   MapPin,
   Star,
   Truck,
@@ -60,26 +58,54 @@ const CATEGORIES = [
   },
 ];
 
-const FEATURES = [
+const UPCOMING_FESTIVALS = [
   {
-    icon: <Truck className="w-6 h-6" />,
-    label: "Daily Delivery",
-    desc: "Fresh flowers every morning at your doorstep",
+    name: "Ram Navami",
+    emoji: "🙏",
+    date: "April 6, 2026",
+    jsDate: new Date("2026-04-06"),
+    tip: "Offer tulsi, yellow flowers, panchamrit & light a ghee diya",
+    category: "pujaEssentials",
   },
   {
-    icon: <Leaf className="w-6 h-6" />,
-    label: "100% Pure",
-    desc: "Directly sourced from certified organic farms",
+    name: "Hanuman Jayanti",
+    emoji: "🐒",
+    date: "April 21, 2026",
+    jsDate: new Date("2026-04-21"),
+    tip: "Offer sindoor, red flowers, boondi prasad & chameli oil lamp",
+    category: "flowers",
   },
   {
-    icon: <Clock className="w-6 h-6" />,
-    label: "Flexible Schedules",
-    desc: "Choose morning puja or evening aarti slots",
+    name: "Akshaya Tritiya",
+    emoji: "✨",
+    date: "April 28, 2026",
+    jsDate: new Date("2026-04-28"),
+    tip: "Begin new puja with gold items, yellow flowers & sattu prasad",
+    category: "thaliSets",
   },
   {
-    icon: <Star className="w-6 h-6" />,
-    label: "Premium Quality",
-    desc: "Temple-grade flowers handpicked daily",
+    name: "Buddha Purnima",
+    emoji: "🌕",
+    date: "May 12, 2026",
+    jsDate: new Date("2026-05-12"),
+    tip: "Offer white lotus, sandalwood incense & kheer prasad",
+    category: "flowers",
+  },
+  {
+    name: "Ganga Dussehra",
+    emoji: "🌊",
+    date: "May 27, 2026",
+    jsDate: new Date("2026-05-27"),
+    tip: "Offer marigold haar, dhoop, earthen diyas & gangajal",
+    category: "haar",
+  },
+  {
+    name: "Rath Yatra",
+    emoji: "🎡",
+    date: "June 26, 2026",
+    jsDate: new Date("2026-06-26"),
+    tip: "Prepare complete puja kit with flowers, fruits & incense",
+    category: "occasionPackages",
   },
 ];
 
@@ -271,12 +297,12 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* ==================== FEATURE CARDS ==================== */}
+      {/* ==================== UPCOMING FESTIVALS ==================== */}
       <section
-        className="py-10"
+        className="py-14"
         style={{
           background:
-            "linear-gradient(180deg, oklch(0.96 0.02 70) 0%, oklch(1.0 0.004 72) 100%)",
+            "linear-gradient(180deg, oklch(0.97 0.015 70) 0%, oklch(0.99 0.006 72) 100%)",
         }}
       >
         <div className="container mx-auto px-4">
@@ -284,35 +310,138 @@ export function HomePage() {
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-40px" }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+            viewport={{ once: true, margin: "-60px" }}
           >
-            {FEATURES.map((f) => (
-              <motion.div
-                key={f.label}
-                variants={itemVariants}
-                className="trust-card rounded-2xl p-5 flex flex-col items-start gap-3 border-l-4 hover:shadow-card transition-all duration-300"
-                style={{ borderLeftColor: "oklch(0.68 0.22 45 / 0.4)" }}
-              >
+            <motion.div variants={itemVariants} className="text-center mb-10">
+              <div className="flex items-center gap-4 justify-center mb-4">
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                  className="h-px w-16"
                   style={{
                     background:
-                      "linear-gradient(135deg, oklch(0.95 0.06 75), oklch(0.92 0.09 68))",
+                      "linear-gradient(90deg, transparent, oklch(0.68 0.22 45 / 0.5))",
                   }}
-                >
-                  <span className="text-saffron">{f.icon}</span>
-                </div>
-                <div>
-                  <p className="font-accent text-sm font-bold text-foreground leading-snug">
-                    {f.label}
-                  </p>
-                  <p className="font-body text-xs text-muted-foreground mt-0.5 leading-relaxed hidden sm:block">
-                    {f.desc}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+                />
+                <span className="text-saffron text-xl">🕉️</span>
+                <span className="font-body text-xs tracking-[0.3em] text-saffron uppercase">
+                  Festival Calendar
+                </span>
+                <span className="text-saffron text-xl">🕉️</span>
+                <div
+                  className="h-px w-16"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, oklch(0.68 0.22 45 / 0.5), transparent)",
+                  }}
+                />
+              </div>
+              <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-2">
+                Upcoming Festivals & Puja Guide
+              </h2>
+              <p className="font-body text-muted-foreground text-sm max-w-md mx-auto">
+                Know what's coming up and be prepared with the right puja items
+                for each sacred day
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {UPCOMING_FESTIVALS.map((fest) => {
+                const today = new Date();
+                const diff = Math.ceil(
+                  (fest.jsDate.getTime() - today.setHours(0, 0, 0, 0)) /
+                    (1000 * 60 * 60 * 24),
+                );
+                const isClose = diff <= 15;
+                return (
+                  <motion.div
+                    key={fest.name}
+                    variants={itemVariants}
+                    className="rounded-2xl p-5 border border-border/60 hover:border-saffron/40 hover:shadow-card transition-all duration-300 hover:-translate-y-1 flex flex-col gap-3"
+                    style={{
+                      background:
+                        "linear-gradient(145deg, oklch(1.0 0.004 72), oklch(0.97 0.018 70))",
+                    }}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+                          style={{
+                            background:
+                              "linear-gradient(135deg, oklch(0.95 0.06 75), oklch(0.91 0.10 68))",
+                          }}
+                        >
+                          {fest.emoji}
+                        </div>
+                        <div>
+                          <h3 className="font-display font-bold text-foreground text-base leading-tight">
+                            {fest.name}
+                          </h3>
+                          <p className="font-body text-xs text-muted-foreground mt-0.5">
+                            {fest.date}
+                          </p>
+                        </div>
+                      </div>
+                      <span
+                        className="flex-shrink-0 font-body text-xs font-bold px-2.5 py-1 rounded-full"
+                        style={
+                          isClose
+                            ? {
+                                background: "oklch(0.95 0.1 32 / 0.2)",
+                                color: "oklch(0.5 0.18 32)",
+                              }
+                            : {
+                                background: "oklch(0.95 0.06 75 / 0.5)",
+                                color: "oklch(0.52 0.15 50)",
+                              }
+                        }
+                      >
+                        {diff === 0
+                          ? "Today!"
+                          : diff === 1
+                            ? "Tomorrow"
+                            : `${diff}d`}
+                      </span>
+                    </div>
+                    <p
+                      className="font-body text-xs text-muted-foreground leading-relaxed border-l-2 pl-3"
+                      style={{ borderColor: "oklch(0.68 0.22 45 / 0.4)" }}
+                    >
+                      🪔 {fest.tip}
+                    </p>
+                    <button
+                      type="button"
+                      className="mt-auto w-full font-body text-xs font-semibold py-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center gap-1.5"
+                      style={{
+                        borderColor: "oklch(0.68 0.22 45 / 0.5)",
+                        color: "oklch(0.52 0.18 40)",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background =
+                          "linear-gradient(135deg, oklch(0.68 0.22 45), oklch(0.52 0.21 38))";
+                        e.currentTarget.style.borderColor = "transparent";
+                        e.currentTarget.style.color = "white";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.borderColor =
+                          "oklch(0.68 0.22 45 / 0.5)";
+                        e.currentTarget.style.color = "oklch(0.52 0.18 40)";
+                      }}
+                      onClick={() =>
+                        navigate({
+                          to: "/catalog",
+                          search: { category: fest.category },
+                        })
+                      }
+                      data-ocid="home.festival.button"
+                    >
+                      Shop Items for {fest.name}{" "}
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  </motion.div>
+                );
+              })}
+            </div>
           </motion.div>
         </div>
       </section>

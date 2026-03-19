@@ -1,36 +1,31 @@
-# Puja Samagri Store
+# Samudraj
 
 ## Current State
-- BookPanditPage shows list of pandits with basic card; no dedicated profile page
-- No location/geolocation feature for finding nearby pandits
-- KitCustomizer shows items but price is static (does not change when items toggled)
-- Kit items list is minimal (8 items per kit)
-- ProductDetailPage is fully detailed (reviews, ratings, related, add-to-cart)
+The app has: Home, Shop (CatalogPage), Product Detail, Cart (Drawer), Checkout, Order Confirmation, My Orders, My Dashboard, Book Pandit, Pandit Profile, Prasad Booking, Schedule, Admin pages.
 
 ## Requested Changes (Diff)
 
 ### Add
-- New `/pandit/$id` route and `PanditDetailPage` — full profile page like ProductDetailPage: large photo, bio, all specializations, experience, languages, area, price, reviews/ratings, certifications, booking CTA
-- Location permission prompt on Book a Pandit page — asks user for geolocation on first visit; if granted, calculates distance from user to each pandit's area using lat/lng coordinates on pandits; sorts pandit list by proximity; shows distance badges on pandit cards
-- Each KitItem gets a `price` (in paise) and `quantity` field
-- Dynamic kit price calculation — KitCustomizer computes sum of selected items' prices; parent ProductDetailPage reads this computed price and shows it (overriding the static product price)
-- Expanded kit items: 14-16 items per kit (Navratri, Griha Pravesh, Ganesh Chaturthi) reflecting real puja requirements
+- `/about` — About Us page
+- `/contact` — Contact Us page with form
+- `/return-policy` — Return/Refund Policy page
+- `/privacy-policy` — Privacy Policy page
+- `/shipping-policy` — Shipping Policy page
+- Routes in App.tsx for all 5 new pages
+- Footer links for all new policy/info pages
 
 ### Modify
-- `PANDITS` data — add lat/lng coordinates for each pandit area (approximate Mumbai coords)
-- `KIT_ITEMS` data — add `price` and `qty` fields to every item
-- `KitCustomizer` component — compute and expose total selected price; show per-item price; show running total in Kit Summary
-- `ProductDetailPage` — pass dynamic kit price to the price display when a kit is open and items are selected
-- `PanditCard` on BookPanditPage — add "View Profile" button linking to `/pandit/$id`; show distance badge if location is available
-- App.tsx — add pandit detail route
+- Footer.tsx — add a new "Info & Policies" column with links to About, Contact, and the 3 policy pages
+- App.tsx — register 5 new routes
 
 ### Remove
-- Nothing removed
+- Nothing
 
 ## Implementation Plan
-1. Update `pandits.ts` — add lat/lng to each pandit
-2. Update `kitItems.ts` — expand all 3 kits to 14-16 items each; add `price` (paise) and `qty` to each item
-3. Create `PanditDetailPage.tsx` — full-detail pandit page with booking CTA, reviews placeholder, specializations, bio, map area
-4. Update `BookPanditPage.tsx` — add location permission banner/hook; sort pandits by distance; add distance badge on cards; add "View Profile" link
-5. Update `ProductDetailPage.tsx` / `KitCustomizer` — dynamic price calculation from selected items; show price per item and running total
-6. Update `App.tsx` — add `/pandit/$id` route
+1. Create AboutPage.tsx — brand story, values, team, mission section
+2. Create ContactPage.tsx — contact form (name, email, phone, message), contact info (address, phone, email, hours)
+3. Create ReturnPolicyPage.tsx — full return/refund policy tailored to floral/puja products
+4. Create PrivacyPolicyPage.tsx — data collection, usage, cookies, ICP context
+5. Create ShippingPolicyPage.tsx — delivery timeframes, areas, charges, handling
+6. Register all 5 routes in App.tsx
+7. Add "Info & Policies" section to Footer with links
