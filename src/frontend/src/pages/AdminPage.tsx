@@ -1,6 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -15,6 +17,8 @@ import {
   AlertTriangle,
   CheckCircle2,
   ClipboardList,
+  CreditCard,
+  Loader2,
   Lock,
   MapPin,
   Package,
@@ -41,8 +45,10 @@ import {
   useClaimFirstAdmin,
   useIsAdmin,
   useIsAdminAssigned,
+  useIsStripeConfigured,
   usePanditAvailabilities,
   useSetPanditAvailability,
+  useSetStripeConfiguration,
   useUpdateOrderStatus,
   useUpdatePrasadOrderStatus,
   useUpdateProductStock,
@@ -1055,6 +1061,143 @@ function AdminAccessDenied() {
 
 // ─── Main AdminPage Component ─────────────────────────────────────────────────
 
+// ─── Stripe Settings Tab ─────────────────────────────────────────────────────
+
+function StripeSettingsTab() {
+  const { data: isConfigured, isLoading } = useIsStripeConfigured();
+  const setStripeConfig = useSetStripeConfiguration();
+  const [secretKey, setSecretKey] = useState("");
+  const [allowedCountries, setAllowedCountries] = useState("IN, US, GB, CA");
+
+  const handleSave = async () => {
+    if (!secretKey.startsWith("sk_")) {
+      toast.error("Secret key must start with sk_");
+      return;
+    }
+    const countries = allowedCountries
+      .split(",")
+      .map((c) => c.trim())
+      .filter(Boolean);
+    setStripeConfig.mutate(
+      { secretKey, allowedCountries: countries },
+      {
+        onSuccess: () => {
+          toast.success("Stripe configuration saved!");
+          setSecretKey("");
+        },
+        onError: (err) => {
+          toast.error(`Failed to save: ${err.message}`);
+        },
+      },
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        {[1, 2, 3].map((i) => (
+          <Skeleton key={i} className="h-10 rounded-lg" />
+        ))}
+      </div>
+    );
+  }
+
+  if (isConfigured) {
+    return (
+      <div className="text-center py-10 space-y-4">
+        <div className="flex justify-center">
+          <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center border-2 border-green-400">
+            <CheckCircle2 className="w-8 h-8 text-green-600" />
+          </div>
+        </div>
+        <div>
+          <p className="text-xl font-bold text-foreground font-display flex items-center justify-center gap-2">
+            ✅ Stripe Connected
+          </p>
+          <p className="text-muted-foreground font-body text-sm mt-1">
+            Online card/UPI payments are active and ready for customers.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-md space-y-5">
+      <div className="p-4 rounded-lg bg-amber-50 border border-amber-200">
+        <p className="text-amber-800 text-sm font-body">
+          🔑 Get your secret key from{" "}
+          <a
+            href="https://dashboard.stripe.com/apikeys"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline text-amber-900 font-semibold"
+          >
+            dashboard.stripe.com → API Keys
+          </a>
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label
+          htmlFor="stripe-key"
+          className="font-body text-sm font-medium text-foreground block"
+        >
+          Stripe Secret Key
+        </Label>
+        <Input
+          id="stripe-key"
+          type="password"
+          placeholder="sk_live_... or sk_test_..."
+          value={secretKey}
+          onChange={(e) => setSecretKey(e.target.value)}
+          className="font-body"
+          data-ocid="admin.stripe_key.input"
+        />
+        <p className="text-xs text-muted-foreground font-body">
+          Starts with sk_live_ (production) or sk_test_ (testing)
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label
+          htmlFor="stripe-countries"
+          className="font-body text-sm font-medium text-foreground block"
+        >
+          Allowed Countries
+        </Label>
+        <Input
+          id="stripe-countries"
+          placeholder="IN, US, GB, CA"
+          value={allowedCountries}
+          onChange={(e) => setAllowedCountries(e.target.value)}
+          className="font-body"
+          data-ocid="admin.stripe_countries.input"
+        />
+        <p className="text-xs text-muted-foreground font-body">
+          Comma-separated ISO country codes
+        </p>
+      </div>
+
+      <Button
+        onClick={handleSave}
+        className="w-full bg-saffron hover:bg-saffron-dark text-white font-body font-semibold"
+        disabled={setStripeConfig.isPending || !secretKey}
+        data-ocid="admin.stripe_save.button"
+      >
+        {setStripeConfig.isPending ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            Saving...
+          </>
+        ) : (
+          "Save Stripe Configuration"
+        )}
+      </Button>
+    </div>
+  );
+}
+
 export function AdminPage() {
   const { data: isAdmin, isLoading: adminLoading } = useIsAdmin();
 
@@ -1148,6 +1291,14 @@ export function AdminPage() {
               <MapPin className="w-4 h-4" />
               Prasad Orders
             </TabsTrigger>
+            <TabsTrigger
+              value="stripe"
+              className="font-body text-sm rounded-lg data-[state=active]:bg-saffron data-[state=active]:text-white"
+              data-ocid="admin.stripe.tab"
+            >
+              <CreditCard className="w-4 h-4 mr-1.5" />
+              Stripe Payments
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="orders">
@@ -1202,6 +1353,19 @@ export function AdminPage() {
               </CardHeader>
               <CardContent className="pt-5">
                 <PrasadOrdersTab />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="stripe">
+            <Card className="border-border bg-card/60 backdrop-blur-sm shadow-xs">
+              <CardHeader className="pb-2 border-b border-border">
+                <CardTitle className="font-display text-xl text-foreground flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-saffron" />
+                  Stripe Payment Settings
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-5">
+                <StripeSettingsTab />
               </CardContent>
             </Card>
           </TabsContent>

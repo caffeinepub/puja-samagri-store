@@ -6,16 +6,40 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Loader2, Package, ShoppingBag } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Loader2,
+  Package,
+  Shield,
+  ShoppingBag,
+  Truck,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { LoginPrompt } from "../components/LoginPrompt";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
-import { useAllProducts, useCart, usePlaceOrder } from "../hooks/useQueries";
+import {
+  useAllProducts,
+  useCart,
+  useCreateCheckoutSession,
+  usePlaceOrder,
+} from "../hooks/useQueries";
 
 function formatPrice(paise: number) {
   return `₹${(paise / 100).toFixed(0)}`;
 }
+
+const VALID_COUPONS: Record<
+  string,
+  { type: "percent" | "flat"; value: number; label: string }
+> = {
+  SAMUDRAJ10: { type: "percent", value: 10, label: "10% off" },
+  LAUNCH20: { type: "percent", value: 20, label: "20% off" },
+  WELCOME5: { type: "flat", value: 500, label: "₹5 off" },
+};
+
+const COD_FEE = 4000; // ₹40 in paise
 
 export function CheckoutPage() {
   const navigate = useNavigate();
@@ -29,6 +53,16 @@ export function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Payment method
+  const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">(
+    "online",
+  );
+
+  // Coupon
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [couponError, setCouponError] = useState("");
+
   const enrichedItems = cartItems.map((item) => {
     const product = products.find((p) => p.id === item.productId);
     return { ...item, product };
@@ -38,6 +72,40 @@ export function CheckoutPage() {
     if (!item.product) return sum;
     return sum + Number(item.product.price) * Number(item.quantity);
   }, 0);
+
+  const couponDiscount = (() => {
+    if (!appliedCoupon) return 0;
+    const c = VALID_COUPONS[appliedCoupon];
+    if (!c) return 0;
+    if (c.type === "percent") return Math.round((subtotal * c.value) / 100);
+    return c.value;
+  })();
+
+  const codFee = paymentMethod === "cod" ? COD_FEE : 0;
+  const total = subtotal - couponDiscount + codFee;
+
+  const handleApplyCoupon = () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+    if (VALID_COUPONS[code]) {
+      setAppliedCoupon(code);
+      setCouponError("");
+      toast.success(`Coupon ${code} applied! ${VALID_COUPONS[code].label}`);
+    } else {
+      setCouponError(
+        "Invalid coupon code. Try SAMUDRAJ10, LAUNCH20, or WELCOME5",
+      );
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput("");
+    setCouponError("");
+  };
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -50,6 +118,8 @@ export function CheckoutPage() {
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
+
+  const createCheckoutSession = useCreateCheckoutSession();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,17 +135,38 @@ export function CheckoutPage() {
       return;
     }
 
-    placeOrder.mutate(
-      { customerName: name, address, phone },
-      {
-        onSuccess: () => {
-          navigate({ to: "/order-confirmation" });
+    if (paymentMethod === "online") {
+      // Stripe payment flow
+      const shoppingItems = enrichedItems
+        .filter((item) => item.product)
+        .map((item) => ({
+          productName: item.product!.name,
+          currency: "inr",
+          quantity: item.quantity,
+          priceInCents: item.product!.price,
+          productDescription: item.product!.description,
+        }));
+      try {
+        const session = await createCheckoutSession.mutateAsync(shoppingItems);
+        if (session.url) {
+          window.location.href = session.url;
+        }
+      } catch (err: any) {
+        toast.error(`Payment failed: ${err.message}`);
+      }
+    } else {
+      placeOrder.mutate(
+        { customerName: name, address, phone },
+        {
+          onSuccess: () => {
+            navigate({ to: "/order-confirmation" });
+          },
+          onError: (err) => {
+            toast.error(`Failed to place order: ${err.message}`);
+          },
         },
-        onError: (err) => {
-          toast.error(`Failed to place order: ${err.message}`);
-        },
-      },
-    );
+      );
+    }
   };
 
   if (!identity) {
@@ -116,7 +207,8 @@ export function CheckoutPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Order Form */}
-        <div>
+        <div className="space-y-5">
+          {/* Delivery Details */}
           <Card className="bg-card border-border shadow-card">
             <CardHeader>
               <CardTitle className="font-display text-xl flex items-center gap-2">
@@ -205,19 +297,30 @@ export function CheckoutPage() {
                 <Button
                   type="submit"
                   className="w-full bg-saffron hover:bg-saffron-dark text-white font-body font-semibold mt-2"
-                  disabled={placeOrder.isPending || cartItems.length === 0}
+                  disabled={
+                    placeOrder.isPending ||
+                    createCheckoutSession.isPending ||
+                    cartItems.length === 0
+                  }
                   data-ocid="checkout.submit.button"
                 >
-                  {placeOrder.isPending ? (
+                  {placeOrder.isPending || createCheckoutSession.isPending ? (
                     <>
                       <Loader2
                         className="w-4 h-4 mr-2 animate-spin"
                         data-ocid="checkout.loading_state"
                       />
-                      Placing Order...
+                      {createCheckoutSession.isPending
+                        ? "Redirecting to Payment..."
+                        : "Placing Order..."}
                     </>
                   ) : (
-                    <>Place Order — {formatPrice(subtotal)}</>
+                    <>
+                      {paymentMethod === "online"
+                        ? "Pay Online — "
+                        : "Place Order — "}
+                      {formatPrice(total)}
+                    </>
                   )}
                 </Button>
 
@@ -234,11 +337,169 @@ export function CheckoutPage() {
               </form>
             </CardContent>
           </Card>
+
+          {/* Payment Method */}
+          <Card className="bg-card border-border shadow-card">
+            <CardHeader>
+              <CardTitle className="font-display text-lg flex items-center gap-2">
+                <Shield className="w-5 h-5 text-saffron" />
+                Payment Method
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("online")}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all font-body text-sm ${
+                  paymentMethod === "online"
+                    ? "border-saffron bg-saffron/5 text-foreground"
+                    : "border-border text-muted-foreground hover:border-saffron/50"
+                }`}
+                data-ocid="checkout.payment.toggle"
+              >
+                <span
+                  className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${
+                    paymentMethod === "online"
+                      ? "border-saffron bg-saffron"
+                      : "border-muted-foreground"
+                  }`}
+                />
+                <span className="font-semibold">
+                  💳 UPI / Net Banking / Cards
+                </span>
+                <span className="ml-auto text-xs text-green-600 font-medium">
+                  Recommended
+                </span>
+              </button>
+
+              {paymentMethod === "online" && (
+                <p className="text-xs text-muted-foreground font-body px-1">
+                  🔐 You'll be redirected to Stripe to complete payment
+                  securely.
+                </p>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("cod")}
+                className={`w-full flex flex-col gap-1 p-3 rounded-lg border transition-all font-body text-sm ${
+                  paymentMethod === "cod"
+                    ? "border-saffron bg-saffron/5"
+                    : "border-border text-muted-foreground hover:border-saffron/50"
+                }`}
+                data-ocid="checkout.cod.toggle"
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${
+                      paymentMethod === "cod"
+                        ? "border-saffron bg-saffron"
+                        : "border-muted-foreground"
+                    }`}
+                  />
+                  <span className="font-semibold text-foreground">
+                    💵 Cash on Delivery (COD)
+                  </span>
+                </div>
+                {paymentMethod === "cod" && (
+                  <p className="text-xs text-amber-600 font-medium ml-7">
+                    + ₹40 COD handling fee added to total
+                  </p>
+                )}
+              </button>
+
+              {/* Security badges */}
+              <div
+                className="flex flex-wrap gap-2 pt-2"
+                data-ocid="checkout.security.section"
+              >
+                <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-body font-medium bg-green-50 text-green-700 border border-green-200">
+                  🔒 SSL Secured
+                </span>
+                <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-body font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                  ✅ 100% Secure Payment
+                </span>
+                <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-body font-medium bg-purple-50 text-purple-700 border border-purple-200">
+                  🛡️ Buyer Protected
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Coupon Code */}
+          <Card className="bg-card border-border shadow-card">
+            <CardHeader>
+              <CardTitle className="font-display text-lg flex items-center gap-2">
+                <Truck className="w-5 h-5 text-saffron" />
+                Coupon / Discount Code
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {appliedCoupon ? (
+                <div className="flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-200">
+                  <div>
+                    <p className="font-body text-sm font-semibold text-green-700">
+                      🎉 {appliedCoupon} applied!
+                    </p>
+                    <p className="font-body text-xs text-green-600">
+                      {VALID_COUPONS[appliedCoupon]?.label} discount
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCoupon}
+                    className="text-xs text-red-500 hover:text-red-700 font-body underline"
+                    data-ocid="checkout.coupon.remove"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Enter coupon code"
+                      value={couponInput}
+                      onChange={(e) => {
+                        setCouponInput(e.target.value);
+                        setCouponError("");
+                      }}
+                      className="font-body flex-1"
+                      data-ocid="checkout.coupon.input"
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleApplyCoupon()
+                      }
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleApplyCoupon}
+                      className="font-body border-saffron text-saffron hover:bg-saffron/10"
+                      data-ocid="checkout.coupon.button"
+                    >
+                      Apply
+                    </Button>
+                  </div>
+                  {couponError && (
+                    <p
+                      className="text-destructive text-xs font-body"
+                      data-ocid="checkout.coupon.error_state"
+                    >
+                      {couponError}
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground font-body">
+                    Try: SAMUDRAJ10 · LAUNCH20 · WELCOME5
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* Order Summary */}
         <div>
-          <Card className="bg-card border-border shadow-card">
+          <Card className="bg-card border-border shadow-card sticky top-4">
             <CardHeader>
               <CardTitle className="font-display text-xl flex items-center gap-2">
                 <Package className="w-5 h-5 text-saffron" />
@@ -296,12 +557,30 @@ export function CheckoutPage() {
                       <span>Delivery</span>
                       <span className="text-green-600">Free</span>
                     </div>
+                    {paymentMethod === "cod" && (
+                      <div className="flex justify-between font-body text-sm text-amber-600">
+                        <span>COD Handling Fee</span>
+                        <span>+₹40</span>
+                      </div>
+                    )}
+                    {appliedCoupon && couponDiscount > 0 && (
+                      <div className="flex justify-between font-body text-sm text-green-600">
+                        <span>Discount ({appliedCoupon})</span>
+                        <span>−{formatPrice(couponDiscount)}</span>
+                      </div>
+                    )}
+                    {/* GST info */}
+                    <div className="flex justify-between font-body text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        GSTIN: 27AABCS1429B1ZZ
+                        <CheckCircle2 className="w-3 h-3 text-green-500" />
+                      </span>
+                      <span className="text-green-600">GST included</span>
+                    </div>
                     <Separator />
                     <div className="flex justify-between font-display font-bold text-lg">
                       <span>Total</span>
-                      <span className="text-saffron">
-                        {formatPrice(subtotal)}
-                      </span>
+                      <span className="text-saffron">{formatPrice(total)}</span>
                     </div>
                   </div>
                 </>

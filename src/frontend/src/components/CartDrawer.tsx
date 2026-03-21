@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -74,6 +75,39 @@ export function CartDrawer() {
             )}
           </SheetTitle>
         </SheetHeader>
+
+        {/* Free shipping progress */}
+        <div
+          className="px-4 py-2.5"
+          style={{
+            background:
+              "linear-gradient(90deg, oklch(0.22 0.10 22), oklch(0.28 0.12 28))",
+          }}
+        >
+          {total / 100 >= 499 ? (
+            <p
+              className="font-body text-xs text-center font-medium"
+              style={{ color: "oklch(0.88 0.18 82)" }}
+            >
+              You have unlocked free shipping!
+            </p>
+          ) : (
+            <>
+              <p className="font-body text-xs text-white/70 mb-1.5">
+                Add{" "}
+                <span className="font-semibold text-white">
+                  Rs.{Math.max(0, 499 - Math.round(total / 100))} more
+                </span>{" "}
+                for free shipping
+              </p>
+              <Progress
+                value={Math.min(100, (total / 100 / 499) * 100)}
+                className="h-1.5"
+                style={{ background: "oklch(1 0 0 / 0.15)" }}
+              />
+            </>
+          )}
+        </div>
 
         <ScrollArea className="flex-1 px-6">
           {cartLoading ? (

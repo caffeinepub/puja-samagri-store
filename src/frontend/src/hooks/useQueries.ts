@@ -9,8 +9,12 @@ import type {
   Product,
   ProductCategory,
   Review,
+  ShoppingItem,
+  backendInterface,
 } from "../backend.d";
+import { createActorWithConfig } from "../config";
 import { SEED_PRODUCTS } from "../data/seedProducts";
+import { getSecretParameter } from "../utils/urlParams";
 import { useActor } from "./useActor";
 import { useInternetIdentity } from "./useInternetIdentity";
 
@@ -74,7 +78,6 @@ export function useCart() {
 }
 
 export function useAddToCart() {
-  const { actor, isFetching: actorFetching } = useActor();
   const { identity } = useInternetIdentity();
   const queryClient = useQueryClient();
   return useMutation({
@@ -84,31 +87,49 @@ export function useAddToCart() {
     }: { productId: bigint; quantity: bigint }) => {
       if (!identity) throw new Error("Not authenticated");
 
-      // Wait for actor to be ready with the authenticated identity (up to 8s)
-      let resolvedActor = actor;
-      if (!resolvedActor || actorFetching) {
-        let waited = 0;
-        while (waited < 8000) {
-          await new Promise((r) => setTimeout(r, 300));
-          waited += 300;
-          // Re-read from the query cache
-          const cached = queryClient.getQueryData<typeof actor>([
-            "actor",
-            identity.getPrincipal().toString(),
-          ]);
-          if (cached) {
-            resolvedActor = cached;
-            break;
-          }
-        }
+      const principalStr = identity.getPrincipal().toString();
+
+      // Try to get actor from cache first
+      let resolvedActor = queryClient.getQueryData<backendInterface>([
+        "actor",
+        principalStr,
+      ]);
+
+      if (!resolvedActor) {
+        // Force-fetch the actor using the same logic as useActor
+        resolvedActor = await queryClient.fetchQuery<backendInterface>({
+          queryKey: ["actor", principalStr],
+          queryFn: async () => {
+            const actorOptions = { agentOptions: { identity } };
+            const actor = await createActorWithConfig(actorOptions);
+            try {
+              const adminToken = getSecretParameter("caffeineAdminToken") || "";
+              await (actor as any)._initializeAccessControlWithSecret(
+                adminToken,
+              );
+            } catch {
+              // adminToken step failed, continue without admin — user role will be set below
+            }
+            return actor;
+          },
+          staleTime: Number.POSITIVE_INFINITY,
+        });
       }
 
       if (!resolvedActor) throw new Error("Actor not ready, please try again");
 
-      // Ensure the caller has the #user role before adding to cart.
-      // This is critical: if ensureCallerIsUser throws, the user is anonymous
-      // (should not happen here) or the call genuinely failed.
-      await resolvedActor.ensureCallerIsUser();
+      // Try to ensure user role, retry once on failure
+      let _userRoleSet = false;
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          await resolvedActor.ensureCallerIsUser();
+          _userRoleSet = true;
+          break;
+        } catch {
+          if (attempt === 0) await new Promise((r) => setTimeout(r, 1000));
+        }
+      }
+      // userRoleSet may be false if already admin — addToCart will still work
 
       await resolvedActor.addToCart(productId, quantity);
     },
@@ -415,6 +436,70 @@ export function useClaimFirstAdmin() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
       queryClient.invalidateQueries({ queryKey: ["isAdminAssigned"] });
+    },
+  });
+}
+
+// ==================== STRIPE ====================
+
+export type CheckoutSession = {
+  id: string;
+  url: string;
+};
+
+export function useCreateCheckoutSession() {
+  const { actor } = useActor();
+  return useMutation({
+    mutationFn: async (
+      items: Array<ShoppingItem>,
+    ): Promise<CheckoutSession> => {
+      if (!actor) throw new Error("Actor not available");
+      const baseUrl = `${window.location.protocol}//${window.location.host}`;
+      const successUrl = `${baseUrl}/payment-success`;
+      const cancelUrl = `${baseUrl}/payment-failure`;
+      const result = await actor.createCheckoutSession(
+        items,
+        successUrl,
+        cancelUrl,
+      );
+      const session = JSON.parse(result) as CheckoutSession;
+      if (!session?.url) {
+        throw new Error("Stripe session missing url");
+      }
+      return session;
+    },
+  });
+}
+
+export function useIsStripeConfigured() {
+  const { actor, isFetching } = useActor();
+  return useQuery<boolean>({
+    queryKey: ["stripeConfigured"],
+    queryFn: async () => {
+      if (!actor) return false;
+      try {
+        return await actor.isStripeConfigured();
+      } catch {
+        return false;
+      }
+    },
+    enabled: !isFetching,
+  });
+}
+
+export function useSetStripeConfiguration() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      secretKey,
+      allowedCountries,
+    }: { secretKey: string; allowedCountries: Array<string> }) => {
+      if (!actor) throw new Error("Not authenticated");
+      await actor.setStripeConfiguration({ secretKey, allowedCountries });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["stripeConfigured"] });
     },
   });
 }

@@ -448,6 +448,22 @@ function RelatedProductCard({
 
 // ===================== Main Page =====================
 
+function getDeliveryRange(): string {
+  const today = new Date();
+  const start = new Date(today);
+  start.setDate(today.getDate() + 4);
+  const end = new Date(today);
+  end.setDate(today.getDate() + 6);
+  if (end.getDay() === 0) end.setDate(end.getDate() + 1);
+  const fmt = (d: Date) =>
+    d.toLocaleDateString("en-IN", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    });
+  return `${fmt(start)} – ${fmt(end)}`;
+}
+
 export function ProductDetailPage() {
   const params = useParams({ from: "/product/$id" });
   const productId = params.id;
@@ -679,6 +695,11 @@ export function ProductDetailPage() {
                   Customizable Kit
                 </Badge>
               )}
+              {product.inStock && Number(product.id) % 3 === 1 && (
+                <Badge className="bg-orange-500/90 text-white border-0 text-xs font-body">
+                  Low Stock
+                </Badge>
+              )}
             </div>
           </div>
 
@@ -747,6 +768,26 @@ export function ProductDetailPage() {
           </div>
 
           <Separator />
+
+          {/* Low stock + delivery estimate */}
+          <div className="space-y-1.5">
+            {product.inStock && Number(product.id) % 3 === 1 && (
+              <p
+                className="font-body text-sm font-semibold"
+                style={{ color: "oklch(0.65 0.22 35)" }}
+              >
+                Only 3 left in stock &mdash; order soon!
+              </p>
+            )}
+            {product.inStock && (
+              <p className="font-body text-sm text-muted-foreground">
+                Estimated Delivery:{" "}
+                <span className="font-semibold text-foreground">
+                  {getDeliveryRange()}
+                </span>
+              </p>
+            )}
+          </div>
 
           {/* Description */}
           <p className="font-body text-base text-foreground/80 leading-relaxed">

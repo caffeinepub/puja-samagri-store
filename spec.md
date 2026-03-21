@@ -1,31 +1,30 @@
 # Samudraj
 
 ## Current State
-The app has: Home, Shop (CatalogPage), Product Detail, Cart (Drawer), Checkout, Order Confirmation, My Orders, My Dashboard, Book Pandit, Pandit Profile, Prasad Booking, Schedule, Admin pages.
+- App is deployed with all features: catalog, cart, checkout, prasad, pandit, admin, etc.
+- Add to Cart sometimes fails with 'Failed to add to cart' error
+- Images (product photos, temple photos, logo, hero banners) are not visible on the site
+- useAddToCart in useQueries.ts silently swallows ensureCallerIsUser errors and then calls addToCart — if actor initialization fails, the whole mutation throws
+- Image files exist in /assets/generated/ and /assets/uploads/ but some may not be properly surfaced through the build pipeline due to dynamic string references
 
 ## Requested Changes (Diff)
 
 ### Add
-- `/about` — About Us page
-- `/contact` — Contact Us page with form
-- `/return-policy` — Return/Refund Policy page
-- `/privacy-policy` — Privacy Policy page
-- `/shipping-policy` — Shipping Policy page
-- Routes in App.tsx for all 5 new pages
-- Footer links for all new policy/info pages
+- Retry logic for ensureCallerIsUser in useAddToCart (retry up to 3 times with delay before proceeding to addToCart)
+- Explicit import/reference of all image assets in a centralized images index file so build pipeline detects them all
+- Image onError fallbacks with emoji/gradient placeholders across all pages
 
 ### Modify
-- Footer.tsx — add a new "Info & Policies" column with links to About, Contact, and the 3 policy pages
-- App.tsx — register 5 new routes
+- useAddToCart: wrap _initializeAccessControlWithSecret in try/catch so actor creation doesn't fail completely if the token call fails; ensure ensureCallerIsUser is retried properly
+- All pages using temple/product/pandit images: add onError handlers with fallback
+- Shankh logo in Navbar: add onError fallback to SVG inline logo
 
 ### Remove
 - Nothing
 
 ## Implementation Plan
-1. Create AboutPage.tsx — brand story, values, team, mission section
-2. Create ContactPage.tsx — contact form (name, email, phone, message), contact info (address, phone, email, hours)
-3. Create ReturnPolicyPage.tsx — full return/refund policy tailored to floral/puja products
-4. Create PrivacyPolicyPage.tsx — data collection, usage, cookies, ICP context
-5. Create ShippingPolicyPage.tsx — delivery timeframes, areas, charges, handling
-6. Register all 5 routes in App.tsx
-7. Add "Info & Policies" section to Footer with links
+1. Fix useAddToCart in useQueries.ts: wrap actor init in try/catch for the adminToken step; add retry for ensureCallerIsUser (up to 2 retries)
+2. In Navbar: add onError on shankh logo img to show inline SVG fallback
+3. In CatalogPage, ProductDetailPage, PrasadBookingPage, BookPanditPage: add onError handlers on all <img> tags
+4. Create/update src/frontend/src/data/imageAssets.ts that explicitly imports/references every asset path so build scanner picks them all up
+5. Validate build passes

@@ -72,10 +72,40 @@ export interface Review {
   'rating' : bigint,
   'reviewer' : Principal,
 }
+export interface ShoppingItem {
+  'productName' : string,
+  'currency' : string,
+  'quantity' : bigint,
+  'priceInCents' : bigint,
+  'productDescription' : string,
+}
+export interface StripeConfiguration {
+  'allowedCountries' : Array<string>,
+  'secretKey' : string,
+}
+export type StripeSessionStatus = {
+    'completed' : { 'userPrincipal' : [] | [string], 'response' : string }
+  } |
+  { 'failed' : { 'error' : string } };
+export interface TransformationInput {
+  'context' : Uint8Array,
+  'response' : http_request_result,
+}
+export interface TransformationOutput {
+  'status' : bigint,
+  'body' : Uint8Array,
+  'headers' : Array<http_header>,
+}
 export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface http_header { 'value' : string, 'name' : string }
+export interface http_request_result {
+  'status' : bigint,
+  'body' : Uint8Array,
+  'headers' : Array<http_header>,
+}
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addProduct' : ActorMethod<
@@ -90,7 +120,12 @@ export interface _SERVICE {
     undefined
   >,
   'cancelPrasadOrder' : ActorMethod<[bigint], undefined>,
+  'claimFirstAdmin' : ActorMethod<[], undefined>,
   'clearCart' : ActorMethod<[], undefined>,
+  'createCheckoutSession' : ActorMethod<
+    [Array<ShoppingItem>, string, string],
+    string
+  >,
   'ensureCallerIsUser' : ActorMethod<[], undefined>,
   'getAllOrders' : ActorMethod<[], Array<Order>>,
   'getAllPrasadOrders' : ActorMethod<[], Array<PrasadOrder>>,
@@ -103,13 +138,18 @@ export interface _SERVICE {
   'getPrasadOrders' : ActorMethod<[], Array<PrasadOrder>>,
   'getProductReviews' : ActorMethod<[bigint], Array<Review>>,
   'getProductsByCategory' : ActorMethod<[ProductCategory], Array<Product>>,
+  'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'isAdminAssigned' : ActorMethod<[], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'isStripeConfigured' : ActorMethod<[], boolean>,
   'placeOrder' : ActorMethod<[string, string, string], undefined>,
   'removeFromCart' : ActorMethod<[bigint], undefined>,
   'removeProduct' : ActorMethod<[bigint], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'setPanditAvailability' : ActorMethod<[string, boolean], undefined>,
+  'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
+  'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateOrderStatus' : ActorMethod<[bigint, OrderStatus], undefined>,
   'updatePrasadOrderStatus' : ActorMethod<
     [bigint, PrasadOrderStatus],

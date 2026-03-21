@@ -8,6 +8,7 @@ import {
   Calendar,
   CheckCircle,
   MapPin,
+  ShieldCheck,
   Star,
   Truck,
 } from "lucide-react";
@@ -114,6 +115,11 @@ const TRUST_BADGES = [
     icon: <CheckCircle className="w-7 h-7" />,
     title: "100% Pure",
     desc: "Freshly sourced from certified organic farms every morning",
+  },
+  {
+    icon: <ShieldCheck className="w-7 h-7" />,
+    title: "100% Original Products",
+    desc: "All products are sourced directly from trusted suppliers. Zero fake, zero compromise.",
   },
   {
     icon: <Star className="w-7 h-7" />,

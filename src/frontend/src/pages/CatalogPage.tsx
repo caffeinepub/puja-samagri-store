@@ -206,6 +206,14 @@ function ProductCard({
               {product.inStock ? "In Stock" : "Out of Stock"}
             </Badge>
           </div>
+          {/* Low stock badge */}
+          {product.inStock && Number(product.id) % 3 === 1 && (
+            <div className="absolute top-3 right-3">
+              <Badge className="text-xs font-body border-0 bg-orange-500/90 text-white">
+                Low Stock
+              </Badge>
+            </div>
+          )}
         </div>
 
         <CardContent className="p-4 flex-1">

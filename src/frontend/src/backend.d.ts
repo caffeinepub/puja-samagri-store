@@ -7,25 +7,13 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface Review {
-    productId: bigint;
-    comment: string;
-    rating: bigint;
-    reviewer: Principal;
+export interface UserProfile {
+    name: string;
 }
-export interface Order {
-    id: bigint;
-    customerName: string;
-    status: OrderStatus;
-    total: bigint;
-    user: Principal;
-    address: string;
-    phone: string;
-    items: Array<OrderItem>;
-}
-export interface PanditAvailability {
-    available: boolean;
-    panditId: string;
+export interface TransformationOutput {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
 }
 export interface OrderItem {
     quantity: bigint;
@@ -46,9 +34,65 @@ export interface PrasadOrder {
     prasadItemName: string;
     totalPrice: bigint;
 }
+export interface Order {
+    id: bigint;
+    customerName: string;
+    status: OrderStatus;
+    total: bigint;
+    user: Principal;
+    address: string;
+    phone: string;
+    items: Array<OrderItem>;
+}
+export interface http_header {
+    value: string;
+    name: string;
+}
+export interface http_request_result {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
+}
+export interface ShoppingItem {
+    productName: string;
+    currency: string;
+    quantity: bigint;
+    priceInCents: bigint;
+    productDescription: string;
+}
+export interface PanditAvailability {
+    available: boolean;
+    panditId: string;
+}
+export interface TransformationInput {
+    context: Uint8Array;
+    response: http_request_result;
+}
+export type StripeSessionStatus = {
+    __kind__: "completed";
+    completed: {
+        userPrincipal?: string;
+        response: string;
+    };
+} | {
+    __kind__: "failed";
+    failed: {
+        error: string;
+    };
+};
+export interface StripeConfiguration {
+    allowedCountries: Array<string>;
+    secretKey: string;
+}
 export interface CartItem {
     productId: bigint;
     quantity: bigint;
+}
+export interface Review {
+    productId: bigint;
+    comment: string;
+    rating: bigint;
+    reviewer: Principal;
 }
 export interface Product {
     id: bigint;
@@ -59,9 +103,6 @@ export interface Product {
     description: string;
     category: ProductCategory;
     price: bigint;
-}
-export interface UserProfile {
-    name: string;
 }
 export enum OrderStatus {
     shipped = "shipped",
@@ -96,7 +137,9 @@ export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     bookPrasad(templeId: bigint, templeName: string, prasadItemName: string, quantity: bigint, pricePerBox: bigint, deliveryAddress: string, contactNumber: string, instructions: string): Promise<void>;
     cancelPrasadOrder(orderId: bigint): Promise<void>;
+    claimFirstAdmin(): Promise<void>;
     clearCart(): Promise<void>;
+    createCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
     ensureCallerIsUser(): Promise<void>;
     getAllOrders(): Promise<Array<Order>>;
     getAllPrasadOrders(): Promise<Array<PrasadOrder>>;
@@ -109,16 +152,19 @@ export interface backendInterface {
     getPrasadOrders(): Promise<Array<PrasadOrder>>;
     getProductReviews(productId: bigint): Promise<Array<Review>>;
     getProductsByCategory(category: ProductCategory): Promise<Array<Product>>;
+    getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    isAdminAssigned(): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
+    isStripeConfigured(): Promise<boolean>;
     placeOrder(customerName: string, address: string, phone: string): Promise<void>;
     removeFromCart(productId: bigint): Promise<void>;
     removeProduct(id: bigint): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setPanditAvailability(panditId: string, available: boolean): Promise<void>;
+    setStripeConfiguration(config: StripeConfiguration): Promise<void>;
+    transform(input: TransformationInput): Promise<TransformationOutput>;
     updateOrderStatus(orderId: bigint, status: OrderStatus): Promise<void>;
     updatePrasadOrderStatus(orderId: bigint, status: PrasadOrderStatus): Promise<void>;
     updateProduct(id: bigint, name: string, category: ProductCategory, description: string, price: bigint, unit: string, inStock: boolean, occasionTag: string | null): Promise<void>;
-    claimFirstAdmin(): Promise<void>;
-    isAdminAssigned(): Promise<boolean>;
 }

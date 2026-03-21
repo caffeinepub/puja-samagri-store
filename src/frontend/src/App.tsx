@@ -1,3 +1,4 @@
+import "./data/imageAssets";
 import { Toaster } from "@/components/ui/sonner";
 import {
   Outlet,
@@ -15,6 +16,7 @@ import { Footer } from "./components/Footer";
 import { Navbar } from "./components/Navbar";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { SplashScreen } from "./components/SplashScreen";
+import { WhatsAppButton } from "./components/WhatsAppButton";
 import { CartDrawerProvider } from "./context/CartContext";
 import { useEnsureUserRole } from "./hooks/useEnsureUserRole";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
@@ -24,16 +26,20 @@ import { BookPanditPage } from "./pages/BookPanditPage";
 import { CatalogPage } from "./pages/CatalogPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { ContactPage } from "./pages/ContactPage";
+import { FAQPage } from "./pages/FAQPage";
 import { HomePage } from "./pages/HomePage";
 import { MyDashboardPage } from "./pages/MyDashboardPage";
 import { MyOrdersPage } from "./pages/MyOrdersPage";
 import { OrderConfirmationPage } from "./pages/OrderConfirmationPage";
+import { PaymentFailurePage } from "./pages/PaymentFailurePage";
+import { PaymentSuccessPage } from "./pages/PaymentSuccessPage";
 import { PrasadBookingPage } from "./pages/PrasadBookingPage";
 import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { ReturnPolicyPage } from "./pages/ReturnPolicyPage";
 import { SchedulePage } from "./pages/SchedulePage";
 import { ShippingPolicyPage } from "./pages/ShippingPolicyPage";
+import { TermsPage } from "./pages/TermsPage";
 
 // Floating "Logging In" status banner
 function LoginStatusBanner() {
@@ -124,6 +130,7 @@ function RootLayout() {
         <Footer />
         <CartDrawer />
         <ScrollToTop />
+        <WhatsAppButton />
         <Toaster richColors position="top-right" />
       </div>
     </CartDrawerProvider>
@@ -235,6 +242,30 @@ const shippingPolicyRoute = createRoute({
   component: ShippingPolicyPage,
 });
 
+const faqRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/faq",
+  component: FAQPage,
+});
+
+const paymentSuccessRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/payment-success",
+  component: PaymentSuccessPage,
+});
+
+const paymentFailureRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/payment-failure",
+  component: PaymentFailurePage,
+});
+
+const termsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/terms",
+  component: TermsPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   catalogRoute,
@@ -252,6 +283,10 @@ const routeTree = rootRoute.addChildren([
   returnPolicyRoute,
   privacyPolicyRoute,
   shippingPolicyRoute,
+  faqRoute,
+  termsRoute,
+  paymentSuccessRoute,
+  paymentFailureRoute,
 ]);
 
 const router = createRouter({ routeTree, scrollRestoration: false });
